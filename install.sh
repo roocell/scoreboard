@@ -17,3 +17,6 @@ sudo systemctl enable scoreboard
 sudo systemctl start scoreboard
 sudo systemctl enable kiosk.service
 sudo systemctl start kiosk.service
+
+sudo apt-get install hostapd
+sudo apt-get install dnsmasq
