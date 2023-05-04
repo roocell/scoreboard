@@ -1,0 +1,7 @@
+[Unit]
+Description=scoreboard
+After=network-online.target
+[Service]
+ExecStart=/home/pi/scoreboard/app.py
+[Install]
+WantedBy=multi-user.target
