@@ -1,5 +1,5 @@
 #!/bin/bash
-# hi
+# hi2
 xset s noblank
 xset s off
 xset -dpms
