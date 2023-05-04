@@ -8,6 +8,7 @@ sudo apt-get upgrade
 
 sudo apt-get install git
 git clone https://github.com/roocell/scoreboard.git
+git config credential.helper store
 
 sudo apt-get install python3-pip
 sudo pip3 install flask
