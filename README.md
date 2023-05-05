@@ -137,3 +137,7 @@ sudo bash -c "sed 's/.*exit 0.*/nodogsplash\nexit 0\' /etc/rc.local.old > /etc/r
 # hostname  
 https://pimylifeup.com/raspberry-pi-hostname/#:~:text=A%20hostname%20is%20a%20human,mac%20address%20of%20each%20device.
 sudo bash -c 'echo -e "192.168.0.10 scoreboard" >> /etc/hosts'
+
+# eventlet, socketio, threads and monkeypatch
+This monkeypatch is required if you want to emit() from a thread.
+We want to do this to update the clock.

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-  <title>controller</title>
+  <title>{{mode}}</title>
   <meta charset="utf-8">
   <meta name="description" content="scoreboard">
   <meta name="author" content="Michael Russell">
@@ -10,7 +10,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Rubik+Mono+One&display=swap');
   </style>
-  <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"> -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 <style>
   body {
@@ -42,7 +42,7 @@
     text-align: center;
 }
 
-.time {
+.clock {
     font-family: 'Rubik Mono One', sans-serif;
     color: #FFFFFF;
     font-size: 8em;
@@ -107,6 +107,8 @@
     awaydiv = document.getElementById("away");
     awaydiv.innerHTML = json.data.away
 
+    clockdiv = document.getElementById("clock");
+    clockdiv.innerHTML = new Date(json.data.clock * 1000).toISOString().substring(14, 19)
   }
 
   function adjustScore(diff, team)
@@ -124,34 +126,50 @@
   <div class="container">
     <div>
       <div class="name">Home</div>
-      <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'home');">-1</div>
-      <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'home');">+1</div>
-      <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'home');">+2</div>
-      <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'home');">+3</div>
+      {% if mode == "controller" %}
+        <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'home');">-1</div>
+        <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'home');">+1</div>
+        <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'home');">+2</div>
+        <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'home');">+3</div>
+      {% else %}
+          <p>This is the default HTML code</p>
+      {% endif %}
       <div class="number" id="home" >23</div>
     </div>
     <div>
       <div class="name">Away</div>
-      <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'away');">-1</div>
-      <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'away');">+1</div>
-      <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'away');">+2</div>
-      <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'away');">+3</div>
-
+      {% if mode == "controller" %}
+        <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'away');">-1</div>
+        <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'away');">+1</div>
+        <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'away');">+2</div>
+        <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'away');">+3</div>
+      {% else %}
+          <p>This is the default HTML code</p>
+      {% endif %}
       <div class="number" id="away" >56</div>
     </div>
   </div>
       <div>
-        <div class="btn">&#9658;</div>
-        <div class="time">10:43</div>
+        {% if mode == "controller" %}
+          <div class="btn">&#9658;</div>
+        {% else %}
+            <p>This is the default HTML code</p>
+        {% endif %}
+        <div class="clock" id="clock">10:43</div>
       </div>
 
-      <div>
-        <div class="btn"> < </div>
-        <div class="btn"> > </div>
-        <div class="btn">&#9660;</div>
-        <div class="btn">&#9650;</div>
-        <div class="btn">&#8634;</div>
-      </div>
+      {% if mode == "controller" %}
+        <div>
+          <div class="btn"> < </div>
+          <div class="btn"> > </div>
+          <div class="btn">&#9660;</div>
+          <div class="btn">&#9650;</div>
+          <div class="btn">&#8634;</div>
+        </div>
+      {% else %}
+
+      {% endif %}
+
 
 
   </body>

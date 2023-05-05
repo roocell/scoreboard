@@ -25,13 +25,17 @@ app.config['SECRET_KEY'] = 'secret!'
 #http = "https://"
 http = "http://"
 async_mode='eventlet'
+if async_mode == 'eventlet':
+    # we want to use eventlet (otherwise https certfile doens't work on socketio)
+    # but we're using a python thread - so we have to monkeypatch
+    import eventlet
+    eventlet.monkey_patch()
 socketio = SocketIO(app, async_mode=async_mode)
-
 
 # data
 homescore = 0
 awayscore = 0
-clock = 0
+clock = 666
 
 def getData():
     return { 
@@ -48,11 +52,11 @@ def timeout():
 
 @app.route('/')
 def index():
-    return render_template('index.html', http=http);
+    return render_template('index.html', http=http, mode='controller');
 
 @app.route('/scoreboard')
 def scoreboard():
-    return render_template('scoreboard.html', http=http);
+    return render_template('index.html', http=http, mode='scoreboard');
 
 @app.route('/adjustScore', methods = ['POST', 'GET'])
 def adjustScore():
@@ -85,9 +89,15 @@ def test_disconnect():
     log.debug('flask client disconnected')
 
 def loop(socketio):
+    global clock
     while True:
-        log.debug("mainloop")
-        time.sleep(10)
+        #log.debug("mainloop")
+        time.sleep(1)
+        if clock > 0:
+            clock = clock - 1
+            log.debug("sending clock")
+            socketio.emit('status', getData(), namespace='/status', broadcast=True)
+
 
 def cleanup():
     log.debug("cleaning up")
