@@ -4,14 +4,15 @@ body {
 }
 
 /* https://fonts.google.com/?preview.text=123%20456&preview.size=41&preview.text_type=custom */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Rubik+Mono+One&display=swap');
 .container {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      height: 100vh;
-    }
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 100vh;
+}
 
 .number {
     /* font-family: 'Bangers', cursive; */
@@ -19,7 +20,7 @@ body {
     color: #FFFFFF;
     font-size: 28em;
     margin: 0 50px;
-    }
+}
 
 .name {
     font-family: 'Rubik Mono One', sans-serif;
@@ -27,7 +28,7 @@ body {
     font-size: 5em;
     margin: 0 50px;
     text-align: center;
-    }
+}
 
 .time {
     font-family: 'Rubik Mono One', sans-serif;
@@ -35,4 +36,8 @@ body {
     font-size: 10em;
     text-align: center;
     padding: 10px;
-  }
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}

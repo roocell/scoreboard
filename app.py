@@ -27,9 +27,24 @@ http = "http://"
 async_mode='eventlet'
 socketio = SocketIO(app, async_mode=async_mode)
 
+
+# data
+homescore = 0
+awayscore = 0
+clock = 0
+
+def getData():
+    return { 
+        'data' : {
+            'home' : homescore,
+            'away' : awayscore,
+            'clock' : clock,
+        }
+    }
+
+
 def timeout():
     log.debug("timeout")
-    trigger()
 
 @app.route('/')
 def index():
@@ -39,17 +54,24 @@ def index():
 def scoreboard():
     return render_template('scoreboard.html', http=http);
 
-@app.route('/trigger')
-def trigger():
-    socketio.emit('status', getStatus(), namespace='/status', broadcast=True)
+@app.route('/adjustScore', methods = ['POST', 'GET'])
+def adjustScore():
+    global homescore
+    global awayscore
+    log.debug("adjustScore")
+    if request.method == 'GET':
+        team = request.args.get('team')
+        diff = request.args.get('diff')
+        if team == 'home':
+            homescore = homescore + int(diff)
+        elif team == 'away':
+            awayscore = awayscore + int(diff)
+        else:
+            log.debug("adjustScore ERROR")
+        socketio.emit('status', getData(), namespace='/status', broadcast=True)
+    else:
+        log.debug("adjustScore ERR")
     return "OK"
-
-def getStatus():
-    return { "status" : "on"}
-
-@app.route('/status')
-def status():
-    return getStatus()
 
 @socketio.on('connect', namespace='/status')
 def connect():
