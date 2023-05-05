@@ -35,6 +35,10 @@ def timeout():
 def index():
     return render_template('index.html', http=http);
 
+@app.route('/scoreboard')
+def scoreboard():
+    return render_template('scoreboard.html', http=http);
+
 @app.route('/trigger')
 def trigger():
     socketio.emit('status', getStatus(), namespace='/status', broadcast=True)
@@ -51,7 +55,7 @@ def status():
 def connect():
     log.debug("flask client connected")
     # always emit at connect so client can update
-    socketio.emit('status', getStatus(), namespace='/status', broadcast=True)
+    #socketio.emit('status', getStatus(), namespace='/status', broadcast=True)
     return "OK"
 
 @socketio.on('disconnect', namespace='/status')

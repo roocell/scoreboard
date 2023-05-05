@@ -57,10 +57,6 @@ git config --global user.name "Michael Russell"
 
 ```
 
-# start manually (rather than service) (dev)
-sudo systemctl disable scoreboard
-sudo python3 app.py
-
 # setup kiosk mode
 This will allow us to display just a webpage on the video out.
 And we don't have to install the entire desktop piOs image.
@@ -72,11 +68,17 @@ sudo systemctl enable kiosk.service
 sudo systemctl start kiosk.service
 ```
 
-# to restart kiosk webpage
+# to restart kiosk webpage (dev)
 ```
 sudo systemctl restart kiosk.service
 sudo systemctl restart scoreboard.service
 ```
+
+# start manually (rather than service) (dev)
+sudo systemctl disable scoreboard
+cd scoreboard
+sudo python3 app.py
+
 
 # install and start Wifi Access Point
 https://pimylifeup.com/raspberry-pi-wireless-access-point/
@@ -110,6 +112,7 @@ sudo systemctl start hostapd
 
 # captive portal
 https://pimylifeup.com/raspberry-pi-captive-portal/
+seems kind of flaky - maybe better just to use a hostname
 
 sudo apt install git libmicrohttpd-dev build-essential
 cd ~
@@ -125,3 +128,7 @@ sudo bash -c "sed 's/.*AuthIdleTimeout.*/AuthIdleTimeout 600/' /etc/nodogsplash/
 
 sudo cp -f /etc/rc.local /etc/rc.local.old
 sudo bash -c "sed 's/.*exit 0.*/nodogsplash\nexit 0\' /etc/rc.local.old > /etc/rc.local"
+
+# hostname  
+https://pimylifeup.com/raspberry-pi-hostname/#:~:text=A%20hostname%20is%20a%20human,mac%20address%20of%20each%20device.
+sudo bash -c 'echo -e "192.168.0.10 scoreboard" >> /etc/hosts'
