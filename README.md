@@ -1,7 +1,6 @@
 # scoreboard
 scoreboard running on raspi. 
 
-<<<<<<< Updated upstream
 # start with piOs 32-bit desktop and 'pi' user
 # use raspi imager, use CTRL-SHIFT-X to setup SSH and wifi
 

@@ -7,7 +7,9 @@ from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask import Response, redirect, url_for
 from flask_socketio import SocketIO, emit
 import threading
-
+import pygame
+import alsaaudio
+import os
 
 # create logger
 log = logging.getLogger(__file__)
@@ -35,7 +37,8 @@ socketio = SocketIO(app, async_mode=async_mode)
 # data
 homescore = 0
 awayscore = 0
-clock = 666
+clock = 10
+paused = True
 
 def getData():
     return { 
@@ -43,6 +46,7 @@ def getData():
             'home' : homescore,
             'away' : awayscore,
             'clock' : clock,
+            'paused' : paused,
         }
     }
 
@@ -77,11 +81,35 @@ def adjustScore():
         log.debug("adjustScore ERR")
     return "OK"
 
+@app.route('/pauseResume', methods = ['POST', 'GET'])
+def pauseResume():
+    global paused
+    log.debug("pauseResume")
+    if request.method == 'GET':
+        if request.args.get('paused') == "true":
+            paused = True
+        else:
+            paused = False
+    else:
+        log.debug("pauseResume ERR")
+    return "OK"
+
+@app.route('/adjustClock', methods = ['POST', 'GET'])
+def adjustClock():
+    global clock
+    log.debug("adjustClock")
+    if request.method == 'GET':
+        clock = request.args.get('value')
+    else:
+        log.debug("adjustClock ERR")
+    return "OK"
+
+
 @socketio.on('connect', namespace='/status')
 def connect():
     log.debug("flask client connected")
     # always emit at connect so client can update
-    #socketio.emit('status', getStatus(), namespace='/status', broadcast=True)
+    socketio.emit('status', getData(), namespace='/status', broadcast=True)
     return "OK"
 
 @socketio.on('disconnect', namespace='/status')
@@ -93,20 +121,40 @@ def loop(socketio):
     while True:
         #log.debug("mainloop")
         time.sleep(1)
+        if paused:
+            continue
         if clock > 0:
             clock = clock - 1
             log.debug("sending clock")
             socketio.emit('status', getData(), namespace='/status', broadcast=True)
+            if clock == 0:
+                pygame.mixer.Sound("buzzer.wav").play()
 
 
 def cleanup():
     log.debug("cleaning up")
 
+
 if __name__ == '__main__':
     atexit.register(cleanup)
     t = threading.Thread(target=loop, args=(socketio,))
     t.start()
-    log.debug("starting HTTP")
 
+    scanCards = alsaaudio.cards()
+    log.debug("cards: {}".format(scanCards))
+    for card in scanCards:
+        scanMixers = alsaaudio.mixers(scanCards.index(card))
+        log.debug("mixers: {}".format(scanMixers))
+
+    m = alsaaudio.Mixer('PCM')
+    m.setvolume(90) # range seems to be non-linear
+
+    pygame.mixer.init(buffer=2048)
+    pygame.mixer.Sound("buzzer.wav").play()
+
+    os.system("aplay /home/pi/scoreboard/buzzer.wav")
+
+
+    log.debug("starting HTTP")
     socketio.run(app,
         debug=True, host='0.0.0.0', port=80, use_reloader=False)

@@ -12,49 +12,61 @@
   </style>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
-<style>
-  body {
-    background-color: #000000;
-}
-/* https://fonts.google.com/?preview.text=123%20456&preview.size=41&preview.text_type=custom */
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Rubik+Mono+One&display=swap');
-.container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    height: 100vh;
-}
+  <style>
+    body {
+      background-color: #000000;
+      {% if mode == "controller" %}
+        overflow: scroll;
+      {% else %}
+        overflow: scroll;
+      {% endif %} 
+    }
+  /* https://fonts.google.com/?preview.text=123%20456&preview.size=41&preview.text_type=custom */
+  @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Rubik+Mono+One&display=swap');
+  .container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+  }
 
-.number {
-    /* font-family: 'Bangers', cursive; */
-    font-family: 'Rubik Mono One', sans-serif;
-    color: #FFFFFF;
-    font-size: 10em;
-    margin: 0 50px;
-}
+  .number {
+      /* font-family: 'Bangers', cursive; */
+      font-family: 'Rubik Mono One', sans-serif;
+      color: #FFFFFF;
+      {% if mode == "controller" %}
+        font-size: 10em;
+      {% else %}
+        font-size: 20em;
+      {% endif %}      
+  }
 
-.name {
-    font-family: 'Rubik Mono One', sans-serif;
-    color: #d7d7d7;
-    font-size: 5em;
-    margin: 0 50px;
-    text-align: center;
-}
+  .name {
+      font-family: 'Rubik Mono One', sans-serif;
+      color: #d7d7d7;
+      font-size: 5em;
+      margin: 0 50px;
+      text-align: center;
+  }
 
-.clock {
-    font-family: 'Rubik Mono One', sans-serif;
-    color: #FFFFFF;
-    font-size: 8em;
-    text-align: center;
-    padding: 10px;
-    bottom: 20px;
-    left: 50%;
-}
-</style>
+  .clock {
+      font-family: 'Rubik Mono One', sans-serif;
+      color: #FFFFFF;
+      font-size: 10em;
+      text-align: center;
+      padding: 10px;
+      bottom: 20px;
+      left: 50%;
+  }
+  .clockdigit {
+    letter-spacing: -1em;
+  }
+
+  </style>
 
   <style>
       .btn {
+        --paused: true; /* custom CSS property */
         font-family: 'Rubik Mono One', sans-serif;
         display: inline-block;
         align-items: center;
@@ -85,17 +97,17 @@
   function ready() {
     var url = "{{http}}" + document.domain + ':' + location.port + '/status';
     console.log(url);
+    setClockValue(55*60+50+5); /* 55:55 */
     var socket = io.connect(url);
     socket.on('connect', () => {
       console.log("connected");
       console.log(socket.id);
-  }) // end socket.on
+    }) // end socket.on
 
-  socket.on('status', function(json) {
-    console.log("status: " + json.data.home)
-    updateData(json);
-  });
-
+    socket.on('status', function(json) {
+      console.log("status: " + json.data.home)
+      updateData(json);
+    });
   }
   document.addEventListener("DOMContentLoaded", ready);
 
@@ -107,8 +119,7 @@
     awaydiv = document.getElementById("away");
     awaydiv.innerHTML = json.data.away
 
-    clockdiv = document.getElementById("clock");
-    clockdiv.innerHTML = new Date(json.data.clock * 1000).toISOString().substring(14, 19)
+    setClockValue(json.data.clock);
   }
 
   function adjustScore(diff, team)
@@ -118,6 +129,152 @@
        // server Response
     });
   }
+  function adjustClock(value)
+  {
+    $.getJSON('/adjustClock?value='+value, {},
+    function(data) {
+       // server Response
+    });
+  }
+  function pauseResume(pauseDiv)
+  {
+    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+    if (paused == "true")
+    {
+      console.log(paused + " resuming");
+      pauseDiv.style.backgroundColor = "#3498db";
+      pauseDiv.style.setProperty('--paused', "false");
+      pauseDiv.innerHTML = "&#9658;"
+      clearClockDigitHighlight();
+      /* send clock value to python */
+      adjustClock(getClockValue());
+    } else {
+      console.log(paused + " pausing");
+      pauseDiv.style.backgroundColor = "#C0C0C0";
+      pauseDiv.style.setProperty('--paused', "true");
+      pauseDiv.innerHTML = "||"
+      highlightClockDigit(1);
+    }
+    $.getJSON('/pauseResume?paused='+paused, {},
+    function(data) {
+       // server Response
+       console.log(data);
+       /* TODO: do we only want to control button if server responds success? */
+    });
+  }
+  function adjustClockValue(value)
+  {
+    var currentClockDigit = findHighlightedClockDigit();
+
+    /* only do this if we're paused */
+    var pauseDiv = document.getElementById('pause');
+    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+    if (paused ==  "false") return;
+
+    /* figure out which digit is highlighted */
+    var digitSpan = document.getElementById("digit" + currentClockDigit);
+    var newValue = parseInt(digitSpan.innerHTML) + parseInt(value);
+    var maxValue = 6;
+
+    /* digit 1/3 can only go up to 6 */
+    /* digit 2/4 can go up to 9 */
+    if (currentClockDigit == 1 || currentClockDigit==3) maxValue = 6;
+    else if (currentClockDigit == 2 || currentClockDigit==4) maxValue = 9;
+    else console.log("ERROR");
+    if (newValue < 0) newValue = maxValue;
+    else if (newValue > maxValue) newValue = 0;
+    digitSpan.innerHTML = newValue;
+  }
+
+  function findHighlightedClockDigit()
+  {
+    var i;
+    var digitSpan;
+    for (i=1; i <=4; i++)
+    {
+      digitSpan = document.getElementById("digit" + i);
+      if (digitSpan.style.color == "green")
+      {
+        return i;
+      }
+    }
+  }
+
+  function clearClockDigitHighlight()
+  {
+    var i;
+    var digitSpan;
+    for (i=1; i<=4; i++)
+    {
+      digitSpan = document.getElementById("digit" + i);
+      digitSpan.classList.add("digit")
+      digitSpan.style.color = "white";
+    }
+  }
+
+  function highlightClockDigit(digit)
+  {
+    clearClockDigitHighlight()
+    var digitSpan = document.getElementById("digit" + digit);
+    digitSpan.style.color = "green";
+  }
+
+  function adjustClockDigit(direction)
+  {
+    var clockDiv = document.getElementById("clock");
+    var text = clockDiv.innerHTML;
+
+    var highlight = findHighlightedClockDigit();
+
+    /* highlight digit */
+    if (direction == "right")
+    {
+      if (highlight == 4)
+      {
+        highlight = 1;
+      } else {
+        highlight += 1;
+      }
+    } else { /* left */
+      if (highlight == 1)
+      {
+        highlight = 4;
+      } else {
+        highlight -= 1;
+      }    
+    }
+    highlightClockDigit(highlight);
+  }
+  function resetClock()
+  {
+    setClockValue(0);
+  }
+  function setClockValue(value)
+  {
+    /* setClock will not be called during pause/adjusting
+       so don't need to worry about highlighting here */
+    var minutes = parseInt(parseInt(value)/60);
+    var seconds = parseInt(value) - minutes*60;
+    var digit1 = document.getElementById("digit1");
+    var digit2 = document.getElementById("digit2");
+    var digit3 = document.getElementById("digit3");
+    var digit4 = document.getElementById("digit4");
+
+    digit1.innerHTML = parseInt(minutes/10);
+    digit2.innerHTML = parseInt(minutes%10);
+    digit3.innerHTML = parseInt(seconds/10);
+    digit4.innerHTML = parseInt(seconds%10);
+  }
+  function getClockValue()
+  {
+    /* return the value of the clocks in seconds */
+    var digit1 = parseInt(document.getElementById("digit1").innerHTML);
+    var digit2 = parseInt(document.getElementById("digit2").innerHTML);
+    var digit3 = parseInt(document.getElementById("digit3").innerHTML);
+    var digit4 = parseInt(document.getElementById("digit4").innerHTML);
+    var value = digit1*60*10+digit2*60+digit3*10+digit4;
+    return value;
+  }
   </script>
 
   </head>
@@ -126,15 +283,16 @@
   <div class="container">
     <div>
       <div class="name">Home</div>
+      <!-- this is called Jinja2 template syntax -->
       {% if mode == "controller" %}
         <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'home');">-1</div>
         <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'home');">+1</div>
         <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'home');">+2</div>
         <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'home');">+3</div>
       {% else %}
-          <p>This is the default HTML code</p>
+
       {% endif %}
-      <div class="number" id="home" >23</div>
+      <div class="number" id="home" >XX</div>
     </div>
     <div>
       <div class="name">Away</div>
@@ -144,33 +302,37 @@
         <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'away');">+2</div>
         <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'away');">+3</div>
       {% else %}
-          <p>This is the default HTML code</p>
+
       {% endif %}
-      <div class="number" id="away" >56</div>
+      <div class="number" id="away" >XX</div>
     </div>
   </div>
-      <div>
-        {% if mode == "controller" %}
-          <div class="btn">&#9658;</div>
-        {% else %}
-            <p>This is the default HTML code</p>
-        {% endif %}
-        <div class="clock" id="clock">10:43</div>
+
+  <div>
+    {% if mode == "controller" %}
+      <div class="btn" id="pause" onClick="pauseResume(this);">&#9658;</div>
+    {% else %}
+
+    {% endif %}
+      <div class="clock" id="clock">
+        <span class="clockdigit" id="digit1">8</span>
+        <span class="clockdigit" id="digit2">8</span>
+        <span class="clockdigit">:</span>
+        <span class="clockdigit" id="digit3">8</span>
+        <span class="clockdigit" id="digit4">8</span>
       </div>
+  </div>
+  {% if mode == "controller" %}
+  <div>
+    <div class="btn" onClick="adjustClockDigit('left');"> < </div>
+    <div class="btn" onClick="adjustClockDigit('right');"> > </div>
+    <div class="btn" onClick="adjustClockValue(1);">&#9650;</div>
+    <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
+    <div class="btn" onClick="resetClock();">&#8634;</div>
+  </div>
+  {% else %}
 
-      {% if mode == "controller" %}
-        <div>
-          <div class="btn"> < </div>
-          <div class="btn"> > </div>
-          <div class="btn">&#9660;</div>
-          <div class="btn">&#9650;</div>
-          <div class="btn">&#8634;</div>
-        </div>
-      {% else %}
-
-      {% endif %}
-
-
+  {% endif %}
 
   </body>
 </html>
