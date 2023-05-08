@@ -16,13 +16,12 @@ chmod 777 install.sh
 sudo ./install.sh
 sudo reboot
 ```
-Connect raspi to projector.
-Connect any device to wifi. Network:scoreboard password:12345678
-Once connected to scoreboard over wifi. Open a browser to http://scoreboard
+Connect raspi to projector.<BR>
+Connect phone/tablet to wifi. Network: <b>scoreboard</b> password: <b>12345678</b><BR>
+Once connected over wifi on your phone/tablet, open a browser to http://scoreboard<BR>
 
-
-
-
+<img src="/scoreboard.jpg" alt="scoreboard" width="500" height="300">
+<img src="/controller.jpg" alt="controller" width="500" height="300">
 
 
 
