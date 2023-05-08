@@ -1,15 +1,19 @@
 # scoreboard
-scoreboard running on raspi. 
+scoreboard running on raspi.
+Intended to be used with a projector using HDMI, controlled via wifi using a phone/tablet.
 
 # simple install and instructions
-Start with piOs 32-bit desktop.<BR>
+Start with piOs 32-bit desktop with a 'pi' user.<BR>
 This app sets up wifi0 and uses it to function.<BR>
 So this must be installed by<BR>
-  <li>desktop interface</li>
+  <li>desktop interface or</li>
   <li>SSH over wifi1</li>
+  <BR>
+  
 ```
 wget https://github.com/roocell/scoreboard/blob/main/install.sh
 sudo ./install.sh
+sudo reboot
 ```
 Connect raspi to projector.
 Connect any device to wifi. Network:scoreboard password:12345678
@@ -41,7 +45,11 @@ sudo rm /etc/xdg/autostart/piwiz.desktop
 ### change config to automatically login as pi user for desktop
 ```
 sudo raspi-config
-system->desktop autologin->Finish->reboot
+system->boot/autologin->desktop autologin->Finish->reboot
+
+or by command line
+sudo bash -c "echo -e 'autologin-user=pi\nautologin-user-timeout=0' >> /etc/lightdm/lightdm.conf"
+
 ```
 
 ### install git and download scoreboard code
