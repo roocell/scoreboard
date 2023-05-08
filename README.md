@@ -49,7 +49,9 @@ sudo raspi-config
 system->boot/autologin->desktop autologin->Finish->reboot
 
 or by command line
-sudo bash -c "echo -e 'autologin-user=pi\nautologin-user-timeout=0' >> /etc/lightdm/lightdm.conf"
+sudo cp -f /etc/lightdm/lightdm.conf /etc/lightdm/lightdm.conf.old
+sudo bash -c  "sed  's/.*autologin-user=.*/autologin-user=pi/' /etc/lightdm/lightdm.conf.old > /etc/lightdm/lightdm.conf.tmp"
+sudo bash -c  "sed  's/.*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf.tmp > /etc/lightdm/lightdm.conf"
 
 
 ```
