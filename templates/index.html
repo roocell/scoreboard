@@ -132,12 +132,6 @@
     }
     document.addEventListener("DOMContentLoaded", ready);
 
-    /* reload the page every minutes just in case the
-       server has gone down. this will refresh the scoreboard
-       without having to restart the kiosk service */
-    setTimeout(() => {
-      location.reload();
-    }, 60*1000);
     function updateData(json)
     {
       homediv = document.getElementById("home");

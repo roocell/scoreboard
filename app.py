@@ -157,7 +157,9 @@ if __name__ == '__main__':
 
     os.system("aplay /home/pi/scoreboard/buzzer.wav")
 
-
+    log.debug("restarting kiosk")
+    os.system("sudo systemctl restart kiosk.service")
+    
     log.debug("starting HTTP")
     socketio.run(app,
         debug=True, host='0.0.0.0', port=80, use_reloader=False)
