@@ -1,9 +1,10 @@
 #!/bin/bash
-
+sleep 3
 xset s noblank
 xset s off
 xset -dpms
 export DISPLAY=:0.0
+sleep 3
 
 unclutter -idle 0.5 -root &
 
