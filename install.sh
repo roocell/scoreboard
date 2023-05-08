@@ -4,7 +4,9 @@ sudo apt full-upgrade
 sudo apt -y install xdotool unclutter
 # sudo bash -c "echo -e 'export DISPLAY=:0.0' >> /root/.bashrc"
 # sudo bash -c "echo -e 'export DISPLAY=:0.0' >> /home/pi/.bashrc"
-sudo bash -c "echo -e 'autologin-user=pi\nautologin-user-timeout=0' >> /etc/lightdm/lightdm.conf"
+sudo cp -f /etc/lightdm/lightdm.conf /etc/lightdm/lightdm.conf.old
+sudo bash -c  "sed  's/.*autologin-user=.*/autologin-user=pi/' /etc/lightdm/lightdm.conf.old > /etc/lightdm/lightdm.conf.tmp"
+sudo bash -c  "sed  's/.*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf.tmp > /etc/lightdm/lightdm.conf"
 sudo rm /etc/xdg/autostart/piwiz.desktop
 sudo apt -y install git
 git clone https://github.com/roocell/scoreboard.git
@@ -17,8 +19,8 @@ sudo pip3 uninstall -y python-socketio
 sudo pip3 install python-socketio==5.7.2
 sudo pip3 install pyalsaaudio
 sudo pip3 install pygame
-sudo cp -f ~/scoreboard/scoreboard.service /etc/systemd/system/
-sudo cp -f ~/scoreboard/kiosk.service /lib/systemd/system/
+sudo cp -f /home/pi/scoreboard/scoreboard.service /etc/systemd/system/
+sudo cp -f /home/pi/scoreboard/kiosk.service /lib/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable scoreboard
 sudo systemctl start scoreboard
