@@ -108,9 +108,13 @@
         console.log(socket.id);
       }) // end socket.on
 
-      socket.on('status', function(json) {
-        console.log("status: " + json.data.home)
+      socket.on('data', function(json) {
+        console.log("data: " + json.data.home)
         updateData(json);
+      });
+      socket.on('clock', function(json) {
+        console.log("clock: " + json.data.home)
+        updateClock(json);
       });
     }
     document.addEventListener("DOMContentLoaded", ready);
@@ -123,13 +127,23 @@
       awaydiv = document.getElementById("away");
       awaydiv.innerHTML = json.data.away
 
+      {% if mode == "controller" %}
+        var pauseDiv = document.getElementById("pause");
+        var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
 
-      var pauseDiv = document.getElementById("pause");
-      var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
-
-      console.log("update from server " + json.data.paused + " " + paused);
-      pauseDiv.style.setProperty('--paused', parseInt(json.data.paused));
-      applyPause();
+        console.log("update from server " + json.data.paused + " " + paused);
+        pauseDiv.style.setProperty('--paused', parseInt(json.data.paused));
+        applyPause();
+      {% else %}
+        /* for scoreboard, if paused, make clock red */
+        var clockDiv = document.getElementById('clock');
+        if (json.data.paused == 1)
+        {
+          clockDiv.style.color = "red";
+        } else {
+          clockDiv.style.color = "white";
+        }
+      {% endif %}   
   }
   function updateClock(json)
   {
@@ -137,7 +151,6 @@
          with pause/resume */
       setClockValue(json.data.clock);
   }
-
 
   function adjustScore(diff, team)
   {
@@ -168,8 +181,6 @@
       pauseDiv.style.backgroundColor = "#3498db";
       pauseDiv.innerHTML = "||";
       clearClockDigitHighlight();
-      /* send clock value to python */
-      adjustClock(getClockValue());
     }
   }
   function togglePause()
@@ -213,6 +224,9 @@
     if (newValue < 0) newValue = maxValue;
     else if (newValue > maxValue) newValue = 0;
     digitSpan.innerHTML = newValue;
+   
+    /* send clock value to python */
+    adjustClock(getClockValue());
   }
 
   function findHighlightedClockDigit()

@@ -76,7 +76,7 @@ def adjustScore():
             awayscore = awayscore + int(diff)
         else:
             log.debug("adjustScore ERROR")
-        socketio.emit('status', getData(), namespace='/status', broadcast=True)
+        socketio.emit('data', getData(), namespace='/status', broadcast=True)
     else:
         log.debug("adjustScore ERR")
     return "OK"
@@ -93,6 +93,8 @@ def pauseResume():
             paused = 0
     else:
         log.debug("pauseResume ERR")
+    # emit pause state to other clients
+    socketio.emit('data', getData(), namespace='/status', broadcast=True)
     return "OK"
 
 @app.route('/adjustClock', methods = ['POST', 'GET'])
@@ -103,14 +105,16 @@ def adjustClock():
         clock = int(request.args.get('value'))
     else:
         log.debug("adjustClock ERR")
+    # emit clock to other clients
+    socketio.emit('clock', getData(), namespace='/status', broadcast=True)
     return "OK"
-
 
 @socketio.on('connect', namespace='/status')
 def connect():
     log.debug("flask client connected")
     # always emit at connect so client can update
-    socketio.emit('status', getData(), namespace='/status', broadcast=True)
+    socketio.emit('data', getData(), namespace='/status', broadcast=True)
+    socketio.emit('clock', getData(), namespace='/status', broadcast=True)
     return "OK"
 
 @socketio.on('disconnect', namespace='/status')
@@ -127,14 +131,12 @@ def loop(socketio):
         if clock > 0:
             clock = clock - 1
             log.debug("sending clock")
-            socketio.emit('status', getData(), namespace='/status', broadcast=True)
+            socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("buzzer.wav").play()
 
-
 def cleanup():
     log.debug("cleaning up")
-
 
 if __name__ == '__main__':
     atexit.register(cleanup)
