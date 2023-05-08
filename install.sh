@@ -6,7 +6,9 @@ sudo apt -y install xdotool unclutter
 # sudo bash -c "echo -e 'export DISPLAY=:0.0' >> /home/pi/.bashrc"
 sudo cp -f /etc/lightdm/lightdm.conf /etc/lightdm/lightdm.conf.old
 sudo bash -c  "sed  's/.*autologin-user=.*/autologin-user=pi/' /etc/lightdm/lightdm.conf.old > /etc/lightdm/lightdm.conf.tmp"
-sudo bash -c  "sed  's/.*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf.tmp > /etc/lightdm/lightdm.conf"
+sudo bash -c  "sed  's/.*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf.tmp > /etc/lightdm/lightdm.conf.tmp2"
+sudo bash -c  "sed  's/.*xserver-command=.*/xserver-command=X -s 0 -dpms/' /etc/lightdm/lightdm.conf.tmp2 > /etc/lightdm/lightdm.conf"
+
 sudo rm /etc/xdg/autostart/piwiz.desktop
 sudo apt -y install git
 git clone https://github.com/roocell/scoreboard.git
