@@ -50,6 +50,7 @@ system->boot/autologin->desktop autologin->Finish->reboot
 or by command line
 sudo bash -c "echo -e 'autologin-user=pi\nautologin-user-timeout=0' >> /etc/lightdm/lightdm.conf"
 
+
 ```
 
 ### install git and download scoreboard code
