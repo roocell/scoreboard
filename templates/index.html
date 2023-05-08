@@ -116,9 +116,28 @@
         console.log("clock: " + json.data.home)
         updateClock(json);
       });
+
+      socket.on('connect_error', error => {
+        console.error('Connection failed:', error);
+      });
+      socket.on('error', error => {
+        console.error('Connection failed:', error);
+      }); 
+      socket.on('disconnect', () => {
+        console.error('Connection disconnected:');
+        {% if mode == "controller" %}
+          alert("Server is down");
+        {% endif %}   
+      });
     }
     document.addEventListener("DOMContentLoaded", ready);
 
+    /* reload the page every minutes just in case the
+       server has gone down. this will refresh the scoreboard
+       without having to restart the kiosk service */
+    setTimeout(() => {
+      location.reload();
+    }, 60*1000);
     function updateData(json)
     {
       homediv = document.getElementById("home");
@@ -332,8 +351,6 @@
         <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'home');">+1</div>
         <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'home');">+2</div>
         <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'home');">+3</div>
-      {% else %}
-
       {% endif %}
       <div class="number" id="home" >XX</div>
     </div>
@@ -344,8 +361,6 @@
         <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'away');">+1</div>
         <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'away');">+2</div>
         <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'away');">+3</div>
-      {% else %}
-
       {% endif %}
       <div class="number" id="away" >XX</div>
     </div>
@@ -354,8 +369,6 @@
   <div>
     {% if mode == "controller" %}
       <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
-    {% else %}
-
     {% endif %}
       <div class="clock" id="clock">
         <span class="clockdigit" id="digit1">8</span>
@@ -373,8 +386,6 @@
     <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
     <div class="btn" onClick="resetClock();">&#8634;</div>
   </div>
-  {% else %}
-
   {% endif %}
 
   </body>
