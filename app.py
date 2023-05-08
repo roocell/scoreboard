@@ -133,7 +133,7 @@ def loop(socketio):
             log.debug("sending clock")
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
-                pygame.mixer.Sound("buzzer.wav").play()
+                pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
 
 def cleanup():
     log.debug("cleaning up")
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     m.setvolume(90) # range seems to be non-linear
 
     pygame.mixer.init(buffer=2048)
-    pygame.mixer.Sound("buzzer.wav").play()
+    pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
 
     os.system("aplay /home/pi/scoreboard/buzzer.wav")
 
