@@ -25,7 +25,7 @@ system->desktop autologin->Finish->reboot
 
 # install git and download scoreboard code
 # install scoreboard things
-# flask-socketio needs to be udpated - so have to revert to python-socketio==5.7.2
+# flask-socketio needs to be updated - so have to revert to python-socketio==5.7.2
 ```
 sudo apt-get install git
 git clone https://github.com/roocell/scoreboard.git
