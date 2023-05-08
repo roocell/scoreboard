@@ -37,7 +37,7 @@ socketio = SocketIO(app, async_mode=async_mode)
 # data
 homescore = 0
 awayscore = 0
-clock = 10
+clock = 20*60
 paused = 1
 
 def getData():

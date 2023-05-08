@@ -52,11 +52,15 @@
   .clock {
       font-family: 'Rubik Mono One', sans-serif;
       color: #FFFFFF;
-      font-size: 10em;
       text-align: center;
       padding: 10px;
       bottom: 20px;
       left: 50%;
+      {% if mode == "controller" %}
+        font-size: 6em;
+      {% else %}
+        font-size: 10em;
+      {% endif %}            
   }
   .clockdigit {
     letter-spacing: -1em;
@@ -93,44 +97,47 @@
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"> </script>
 
   <script>
-  // socket IO client side
-  function ready() {
-    var url = "{{http}}" + document.domain + ':' + location.port + '/status';
-    console.log(url);
-    setClockValue(55*60+50+5); /* 55:55 */
-    var socket = io.connect(url);
-    socket.on('connect', () => {
-      console.log("connected");
-      console.log(socket.id);
-    }) // end socket.on
+    // socket IO client side
+    function ready() {
+      var url = "{{http}}" + document.domain + ':' + location.port + '/status';
+      console.log(url);
+      setClockValue(55*60+50+5); /* 55:55 */
+      var socket = io.connect(url);
+      socket.on('connect', () => {
+        console.log("connected");
+        console.log(socket.id);
+      }) // end socket.on
 
-    socket.on('status', function(json) {
-      console.log("status: " + json.data.home)
-      updateData(json);
-    });
+      socket.on('status', function(json) {
+        console.log("status: " + json.data.home)
+        updateData(json);
+      });
+    }
+    document.addEventListener("DOMContentLoaded", ready);
+
+    function updateData(json)
+    {
+      homediv = document.getElementById("home");
+      homediv.innerHTML = json.data.home
+
+      awaydiv = document.getElementById("away");
+      awaydiv.innerHTML = json.data.away
+
+
+      var pauseDiv = document.getElementById("pause");
+      var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+
+      console.log("update from server " + json.data.paused + " " + paused);
+      pauseDiv.style.setProperty('--paused', parseInt(json.data.paused));
+      applyPause();
   }
-  document.addEventListener("DOMContentLoaded", ready);
-
-  function updateData(json)
+  function updateClock(json)
   {
-    homediv = document.getElementById("home");
-    homediv.innerHTML = json.data.home
+      /* send clock separately to overcome race condition
+         with pause/resume */
+      setClockValue(json.data.clock);
+  }
 
-    awaydiv = document.getElementById("away");
-    awaydiv.innerHTML = json.data.away
-
-    /* set clock value from server first, because pause could apply clock */
-    setClockValue(json.data.clock);
-
-    var pauseDiv = document.getElementById("pause");
-    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
-
-    /* only apply if different */
-    /* TODO: there's a race condition here - maybe send clock separately?*/
-    console.log("update from server " + json.data.paused + " " + paused);
-    pauseDiv.style.setProperty('--paused', parseInt(json.data.paused));
-    applyPause();
-}
 
   function adjustScore(diff, team)
   {
@@ -153,13 +160,13 @@
     if (paused == 1)
     {
       console.log(paused + " pausing");
-      pauseDiv.style.backgroundColor = "#C0C0C0";
-      pauseDiv.innerHTML = "||"
+      pauseDiv.style.backgroundColor = "green";
+      pauseDiv.innerHTML = "&#9658;"
       highlightClockDigit(1);
     } else {
       console.log(paused + " resuming");
       pauseDiv.style.backgroundColor = "#3498db";
-      pauseDiv.innerHTML = "&#9658;"
+      pauseDiv.innerHTML = "||";
       clearClockDigitHighlight();
       /* send clock value to python */
       adjustClock(getClockValue());
