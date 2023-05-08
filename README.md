@@ -1,31 +1,52 @@
 # scoreboard
 scoreboard running on raspi. 
 
-# start with piOs 32-bit desktop and 'pi' user
-# use raspi imager, use CTRL-SHIFT-X to setup SSH and wifi
+# simple install and instructions
+Start with piOs 32-bit desktop.<BR>
+This app sets up wifi0 and uses it to function.<BR>
+So this must be installed by<BR>
+  <li>desktop interface</li>
+  <li>SSH over wifi1</li>
+```
+wget https://github.com/roocell/scoreboard/blob/main/install.sh
+sudo ./install.sh
+```
+Connect raspi to projector.
+Connect any device to wifi. Network:scoreboard password:12345678
+Once connected to scoreboard over wifi. Open a browser to http://scoreboard
 
-# login and update
+
+
+
+
+
+
+# detailed manual install / notes
+Start with piOs 32-bit desktop and 'pi' user
+Use raspi imager, use CTRL-SHIFT-X to setup SSH and wifi
+
+### login and update
 ```
 sudo apt update
 sudo apt full-upgrade
 
 ```
 
-# auto login for desktop
+### auto login for desktop
 ```
 sudo apt install xdotool unclutter
 sudo rm /etc/xdg/autostart/piwiz.desktop
 ```
 
-# change config to automatically login as pi user for desktop
+### change config to automatically login as pi user for desktop
 ```
 sudo raspi-config
 system->desktop autologin->Finish->reboot
 ```
 
-# install git and download scoreboard code
-# install scoreboard things
-# flask-socketio needs to be updated - so have to revert to python-socketio==5.7.2
+### install git and download scoreboard code
+Install scoreboard things
+flask-socketio needs to be updated - so have to revert to python-socketio==5.7.2
 ```
 sudo apt-get install git
 git clone https://github.com/roocell/scoreboard.git
@@ -44,8 +65,8 @@ sudo systemctl enable scoreboard
 sudo systemctl start scoreboard
 ```
 
-# for development (skip if not developing)
-# install samba and store git creds
+### install samba and store git creds
+for development (skip if not developing)
 ```
 sudo apt-get install samba samba-common-bin
 sudo echo -e "[pi]\npath = /home/pi/\nwriteable=Yes\ncreate mask=0777\ndirectory mask=0777\npublic=no\nmangled names = no" >>  /etc/samba/smb.conf
@@ -61,7 +82,7 @@ git config --global user.name "Michael Russell"
 
 ```
 
-# setup kiosk mode
+### setup kiosk mode
 This will allow us to display just a webpage on the video out.
 And we don't have to install the entire desktop piOs image.
 from https://www.raspberrypi.com/tutorials/how-to-use-a-raspberry-pi-in-kiosk-mode/
@@ -72,19 +93,19 @@ sudo systemctl enable kiosk.service
 sudo systemctl start kiosk.service
 ```
 
-# to restart kiosk webpage (dev)
+### to restart kiosk webpage (dev)
 ```
 sudo systemctl restart kiosk.service
 sudo systemctl restart scoreboard.service
 ```
 
-# start manually (rather than service) (dev)
+### start manually (rather than service) (dev)
 sudo systemctl disable scoreboard
 cd scoreboard
 sudo python3 app.py
 
 
-# install and start Wifi Access Point
+### install and start Wifi Access Point
 https://pimylifeup.com/raspberry-pi-wireless-access-point/
 
 ```
@@ -114,7 +135,7 @@ sudo systemctl start hostapd
 
 ```
 
-# captive portal
+### captive portal (optional)
 https://pimylifeup.com/raspberry-pi-captive-portal/
 seems kind of flaky - maybe better just to use a hostname
 
@@ -133,10 +154,10 @@ sudo bash -c "sed 's/.*AuthIdleTimeout.*/AuthIdleTimeout 600/' /etc/nodogsplash/
 sudo cp -f /etc/rc.local /etc/rc.local.old
 sudo bash -c "sed 's/.*exit 0.*/nodogsplash\nexit 0\' /etc/rc.local.old > /etc/rc.local"
 
-# hostname  
+### hostname  
 https://pimylifeup.com/raspberry-pi-hostname/#:~:text=A%20hostname%20is%20a%20human,mac%20address%20of%20each%20device.
 sudo bash -c 'echo -e "192.168.0.10 scoreboard" >> /etc/hosts'
 
-# eventlet, socketio, threads and monkeypatch
+### eventlet, socketio, threads and monkeypatch
 This monkeypatch is required if you want to emit() from a thread.
 We want to do this to update the clock.
