@@ -12,6 +12,7 @@ So this must be installed by<BR>
   
 ```
 wget https://github.com/roocell/scoreboard/blob/main/install.sh
+chmod 777 install.sh
 sudo ./install.sh
 sudo reboot
 ```
