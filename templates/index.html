@@ -66,7 +66,7 @@
 
   <style>
       .btn {
-        --paused: true; /* custom CSS property */
+        --paused: 1; /* custom CSS property */
         font-family: 'Rubik Mono One', sans-serif;
         display: inline-block;
         align-items: center;
@@ -119,8 +119,18 @@
     awaydiv = document.getElementById("away");
     awaydiv.innerHTML = json.data.away
 
+    /* set clock value from server first, because pause could apply clock */
     setClockValue(json.data.clock);
-  }
+
+    var pauseDiv = document.getElementById("pause");
+    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+
+    /* only apply if different */
+    /* TODO: there's a race condition here - maybe send clock separately?*/
+    console.log("update from server " + json.data.paused + " " + paused);
+    pauseDiv.style.setProperty('--paused', parseInt(json.data.paused));
+    applyPause();
+}
 
   function adjustScore(diff, team)
   {
@@ -136,25 +146,37 @@
        // server Response
     });
   }
-  function pauseResume(pauseDiv)
+  function applyPause()
   {
+    var pauseDiv = document.getElementById("pause");
     var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
-    if (paused == "true")
+    if (paused == 1)
     {
+      console.log(paused + " pausing");
+      pauseDiv.style.backgroundColor = "#C0C0C0";
+      pauseDiv.innerHTML = "||"
+      highlightClockDigit(1);
+    } else {
       console.log(paused + " resuming");
       pauseDiv.style.backgroundColor = "#3498db";
-      pauseDiv.style.setProperty('--paused', "false");
       pauseDiv.innerHTML = "&#9658;"
       clearClockDigitHighlight();
       /* send clock value to python */
       adjustClock(getClockValue());
-    } else {
-      console.log(paused + " pausing");
-      pauseDiv.style.backgroundColor = "#C0C0C0";
-      pauseDiv.style.setProperty('--paused', "true");
-      pauseDiv.innerHTML = "||"
-      highlightClockDigit(1);
     }
+  }
+  function togglePause()
+  {
+    var pauseDiv = document.getElementById("pause");
+    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+    if (paused == 1)
+    {
+      pauseDiv.style.setProperty('--paused', 0);
+    } else {
+      pauseDiv.style.setProperty('--paused', 1);
+    }
+    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+    applyPause()
     $.getJSON('/pauseResume?paused='+paused, {},
     function(data) {
        // server Response
@@ -310,7 +332,7 @@
 
   <div>
     {% if mode == "controller" %}
-      <div class="btn" id="pause" onClick="pauseResume(this);">&#9658;</div>
+      <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
     {% else %}
 
     {% endif %}

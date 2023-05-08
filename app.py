@@ -38,7 +38,7 @@ socketio = SocketIO(app, async_mode=async_mode)
 homescore = 0
 awayscore = 0
 clock = 10
-paused = True
+paused = 1
 
 def getData():
     return { 
@@ -84,12 +84,13 @@ def adjustScore():
 @app.route('/pauseResume', methods = ['POST', 'GET'])
 def pauseResume():
     global paused
-    log.debug("pauseResume")
     if request.method == 'GET':
-        if request.args.get('paused') == "true":
-            paused = True
+        if int(request.args.get('paused')) == 1:
+            log.debug("pause")
+            paused = 1
         else:
-            paused = False
+            log.debug("resume")
+            paused = 0
     else:
         log.debug("pauseResume ERR")
     return "OK"
@@ -99,7 +100,7 @@ def adjustClock():
     global clock
     log.debug("adjustClock")
     if request.method == 'GET':
-        clock = request.args.get('value')
+        clock = int(request.args.get('value'))
     else:
         log.debug("adjustClock ERR")
     return "OK"
@@ -119,7 +120,7 @@ def test_disconnect():
 def loop(socketio):
     global clock
     while True:
-        #log.debug("mainloop")
+        log.debug("mainloop")
         time.sleep(1)
         if paused:
             continue
