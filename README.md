@@ -11,7 +11,7 @@ So this must be installed by<BR>
   <BR>
   
 ```
-wget https://github.com/roocell/scoreboard/blob/main/install.sh
+wget https://raw.githubusercontent.com/roocell/scoreboard/main/install.sh
 chmod 777 install.sh
 sudo ./install.sh
 sudo reboot
