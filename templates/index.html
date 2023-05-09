@@ -6,7 +6,7 @@
   <meta name="description" content="scoreboard">
   <meta name="author" content="Michael Russell">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  
+
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
   <style>
@@ -24,7 +24,16 @@
         overflow: hidden;
       {% endif %} 
     }
-  
+
+    @media (orientation: landscape) {
+      body {
+        {% if mode == "controller" %}
+          width: 1280px;
+          height: 1000px;
+        {% endif %} 
+      }
+    }
+
   .container {
       display: flex;
       flex-direction: row;
@@ -36,6 +45,7 @@
       /* font-family: 'Bangers', cursive; */
       font-family: 'Rubik Mono One', sans-serif;
       color: #FFFFFF;
+      text-align: center;
       {% if mode == "controller" %}
         font-size: 10em;
       {% else %}
@@ -55,11 +65,8 @@
       font-family: 'Rubik Mono One', sans-serif;
       color: #FFFFFF;
       text-align: center;
-      padding: 10px;
-      bottom: 20px;
-      left: 50%;
       {% if mode == "controller" %}
-        font-size: 6em;
+        font-size: 5em;
       {% else %}
         font-size: 10em;
       {% endif %}            
@@ -372,26 +379,22 @@
   </div>
 
   <div>
+    <div class="clock" id="clock">
+      <span class="clockdigit" id="digit1">8</span>
+      <span class="clockdigit" id="digit2">8</span>
+      <span class="clockdigit">:</span>
+      <span class="clockdigit" id="digit3">8</span>
+      <span class="clockdigit" id="digit4">8</span>
+    </div>
     {% if mode == "controller" %}
-      <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
-    {% endif %}
-      <div class="clock" id="clock">
-        <span class="clockdigit" id="digit1">8</span>
-        <span class="clockdigit" id="digit2">8</span>
-        <span class="clockdigit">:</span>
-        <span class="clockdigit" id="digit3">8</span>
-        <span class="clockdigit" id="digit4">8</span>
-      </div>
-  </div>
-  {% if mode == "controller" %}
-  <div>
+    <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
     <div class="btn" onClick="adjustClockDigit('left');"> < </div>
     <div class="btn" onClick="adjustClockDigit('right');"> > </div>
     <div class="btn" onClick="adjustClockValue(1);">&#9650;</div>
     <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
     <div class="btn" onClick="resetClock();">&#8634;</div>
+    {% endif %}
   </div>
-  {% endif %}
 
   </body>
 </html>
