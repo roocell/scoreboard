@@ -31,9 +31,9 @@ sudo systemctl start kiosk.service
 
 # wifi AP
 sudo apt -y install hostapd dnsmasq iptables
-sudo echo -e "interface wlan0\n  static ip_address=192.168.0.10/24\n  nohook wpa_supplicant" >> /etc/dhcpcd.conf
+sudo echo -e "interface wlan0\n  static ip_address=192.168.10.10/24\n  nohook wpa_supplicant" >> /etc/dhcpcd.conf
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-sudo bash -c 'echo -e "interface=wlan0\n  dhcp-range=192.168.0.11,192.168.0.30,255.255.255.0,24h\n" > /etc/dnsmasq.conf'
+sudo bash -c 'echo -e "interface=wlan0\n  dhcp-range=192.168.10.11,192.168.10.30,255.255.255.0,24h\n" > /etc/dnsmasq.conf'
 
 sudo bash -c 'echo -e "interface=wlan0\ndriver=nl80211\nieee80211n=1\n#bridge=br0\nhw_mode=g\nchannel=7\nwmm_enabled=0\nmacaddr_acl=0\nauth_algs=1\nignore_broadcast_ssid=0\nwpa=2\nwpa_key_mgmt=WPA-PSK\nwpa_pairwise=TKIP\nrsn_pairwise=CCMP\nssid=scoreboard\nwpa_passphrase=12345678" > /etc/hostapd/hostapd.conf'
 sudo mv /etc/default/hostapd /etc/default/hostapd.old
@@ -55,4 +55,4 @@ sudo systemctl enable hostapd
 sudo systemctl start hostapd
 
 # scoreboard host
-sudo bash -c 'echo -e "192.168.0.10 scoreboard" >> /etc/hosts'
+sudo bash -c 'echo -e "192.168.10.10 scoreboard" >> /etc/hosts'
