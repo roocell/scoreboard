@@ -124,7 +124,7 @@ def test_disconnect():
 def loop(socketio):
     global clock
     while True:
-        log.debug("mainloop")
+        #log.debug("mainloop")
         time.sleep(1)
         if paused:
             continue
