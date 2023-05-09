@@ -150,10 +150,11 @@ sudo systemctl start hostapd
 https://pimylifeup.com/raspberry-pi-captive-portal/
 seems kind of flaky - maybe better just to use a hostname
 
+```
 sudo apt install git libmicrohttpd-dev build-essential
-cd ~
+cd /home/pi
 git clone https://github.com/nodogsplash/nodogsplash.git
-cd ~/nodogsplash
+cd /home/pi/nodogsplash
 make
 sudo make install
 
@@ -165,9 +166,15 @@ sudo bash -c "sed 's/.*AuthIdleTimeout.*/AuthIdleTimeout 600/' /etc/nodogsplash/
 sudo cp -f /etc/rc.local /etc/rc.local.old
 sudo bash -c "sed 's/.*exit 0.*/nodogsplash\nexit 0\' /etc/rc.local.old > /etc/rc.local"
 
+sudo bash -c "echo -e 'SplashPage http://scoreboard' >> /etc/nodogsplash/nodogsplash.conf"
+```
+
 ### hostname  
 https://pimylifeup.com/raspberry-pi-hostname/#:~:text=A%20hostname%20is%20a%20human,mac%20address%20of%20each%20device.
+
+```
 sudo bash -c 'echo -e "192.168.0.10 scoreboard" >> /etc/hosts'
+```
 
 ### eventlet, socketio, threads and monkeypatch
 This monkeypatch is required if you want to emit() from a thread.

@@ -244,6 +244,7 @@
     adjustClock(getClockValue());
   }
 
+  let HIGHLIGHT_COLOR = "green"
   function findHighlightedClockDigit()
   {
     var i;
@@ -251,37 +252,45 @@
     for (i=1; i <=4; i++)
     {
       digitSpan = document.getElementById("digit" + i);
-      if (digitSpan.style.color == "green")
+      if (digitSpan.style.color == HIGHLIGHT_COLOR)
       {
         return i;
       }
     }
   }
 
-  function clearClockDigitHighlight()
+  let mySpan = document.getElementById("digit1");
+
+  // This function will be called before the next repaint
+  function redraw() {
+    mySpan.style.display = "none";
+    mySpan.offsetHeight; // This triggers a redraw
+    mySpan.style.display = "inline-block";
+  }
+
+  function clearClockDigitHighlight(skip)
   {
     var i;
     var digitSpan;
     for (i=1; i<=4; i++)
     {
+      if (i == skip) continue;
       digitSpan = document.getElementById("digit" + i);
-      digitSpan.classList.add("digit")
       digitSpan.style.color = "white";
     }
   }
 
   function highlightClockDigit(digit)
   {
-    clearClockDigitHighlight()
+    clearClockDigitHighlight(digit)
     var digitSpan = document.getElementById("digit" + digit);
-    digitSpan.style.color = "green";
+    digitSpan.style.color = HIGHLIGHT_COLOR;
+    mySpan = digitSpan;
+    requestAnimationFrame(redraw);
   }
 
   function adjustClockDigit(direction)
   {
-    var clockDiv = document.getElementById("clock");
-    var text = clockDiv.innerHTML;
-
     var highlight = findHighlightedClockDigit();
 
     /* highlight digit */
