@@ -23,7 +23,8 @@ Once connected over wifi on your phone/tablet, open a browser to http://scoreboa
 <img src="/scoreboard.jpg" alt="scoreboard" width="500" height="300">
 <img src="/controller.jpg" alt="controller" width="500" height="300">
 
-# if you need a different subnet than 192.168.0.X to get internet access
+# change subnet
+if you need a different subnet than 192.168.0.X to get internet access
 edit these 3 files. changing 192.168.0 to a different subnet (like 192.168.30)
 ```
 /etc/dhcpcd.conf
