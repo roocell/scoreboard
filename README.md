@@ -23,7 +23,13 @@ Once connected over wifi on your phone/tablet, open a browser to http://scoreboa
 <img src="/scoreboard.jpg" alt="scoreboard" width="500" height="300">
 <img src="/controller.jpg" alt="controller" width="500" height="300">
 
-
+# to update
+```
+cd /home/pi/scoreboard
+git pull
+sudo systemctl restart scoreboard
+sudo systemctl restart kiosk
+```
 
 # detailed manual install / notes
 Start with piOs 32-bit desktop and 'pi' user
