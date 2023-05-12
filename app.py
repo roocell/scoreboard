@@ -153,9 +153,6 @@ if __name__ == '__main__':
     m.setvolume(90) # range seems to be non-linear
 
     pygame.mixer.init(buffer=2048)
-    pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
-
-    os.system("aplay /home/pi/scoreboard/buzzer.wav")
 
     log.debug("restarting kiosk")
     os.system("sudo systemctl restart kiosk.service")

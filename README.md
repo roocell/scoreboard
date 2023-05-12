@@ -195,3 +195,16 @@ sudo bash -c 'echo -e "192.168.0.10 scoreboard" >> /etc/hosts'
 ### eventlet, socketio, threads and monkeypatch
 This monkeypatch is required if you want to emit() from a thread.
 We want to do this to update the clock.
+
+### fix sound
+Default sound device for pi user seems to output to HDMI fine.<BR>
+But default sound device when running sudo is the audio jack.<BR>
+Sine we're running the scoreboad with sudo, then we need to fix this.<BR>
+Fix is to generate .asoundrc file for the pi user, then copy it to root user and reboot.<BR>
+
+```
+cd /home/pi
+alsactl --file ~/.asoundrc store
+sudo cp .asoundrc /root
+sudo reboot
+```
