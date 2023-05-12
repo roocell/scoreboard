@@ -39,6 +39,8 @@ homescore = 0
 awayscore = 0
 clock = 20*60
 paused = 1
+consecutive_pts_home = 0
+consecutive_pts_away = 0
 
 def getData():
     return { 
@@ -66,17 +68,30 @@ def scoreboard():
 def adjustScore():
     global homescore
     global awayscore
+    global consecutive_pts_home, consecutive_pts_away
     log.debug("adjustScore")
+    diff = int(request.args.get('diff'))
     if request.method == 'GET':
         team = request.args.get('team')
-        diff = request.args.get('diff')
         if team == 'home':
-            homescore = homescore + int(diff)
+            homescore = homescore + diff
+            if (diff == 3):
+                consecutive_pts_home += 1
+                consecutive_pts_away = 0
         elif team == 'away':
-            awayscore = awayscore + int(diff)
+            awayscore = awayscore + diff
+            if (diff == 3):
+                consecutive_pts_away += 1
+                consecutive_pts_home = 0
         else:
             log.debug("adjustScore ERROR")
+
         socketio.emit('data', getData(), namespace='/status', broadcast=True)
+        if (consecutive_pts_home >= 3 or consecutive_pts_away >= 3):
+            pygame.mixer.Sound("/home/pi/scoreboard/on-fire.wav").play()
+            consecutive_pts_home = 0
+            consecutive_pts_away = 0
+
     else:
         log.debug("adjustScore ERR")
     return "OK"
@@ -134,6 +149,8 @@ def loop(socketio):
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
+            elif clock < 10:
+                pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
 
 def cleanup():
     log.debug("cleaning up")
