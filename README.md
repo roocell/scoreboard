@@ -196,15 +196,30 @@ sudo bash -c 'echo -e "192.168.0.10 scoreboard" >> /etc/hosts'
 This monkeypatch is required if you want to emit() from a thread.
 We want to do this to update the clock.
 
+### store git credentials
+git config --global credential.helper 'cache --timeout=3600'
+git config --global user.email "email"
+git config --global user.name "name"
+
 ### fix sound
 Default sound device for pi user seems to output to HDMI fine.<BR>
 But default sound device when running sudo is the audio jack.<BR>
 Sine we're running the scoreboad with sudo, then we need to fix this.<BR>
-Fix is to generate .asoundrc file for the pi user, then copy it to root user and reboot.<BR>
+Fix is to do the following and then reboot.<BR>
+https://www.alsa-project.org/wiki/Setting_the_default_device
 
 ```
-cd /home/pi
-alsactl --file ~/.asoundrc store
-sudo cp .asoundrc /root
-sudo reboot
+cat /proc/asound/cards
+ 
+pi@raspberrypi:~/scoreboard $  cat /proc/asound/cards
+ 0 [Headphones     ]: bcm2835_headpho - bcm2835 Headphones
+                      bcm2835 Headphones
+ 1 [vc4hdmi0       ]: vc4-hdmi - vc4-hdmi-0
+                      vc4-hdmi-0
+ 2 [vc4hdmi1       ]: vc4-hdmi - vc4-hdmi-1
+                      vc4-hdmi-1
+```
+
+```
+sudo bash -c 'echo -e "defaults.pcm.card 1\ndefaults.ctl.card 1" > /etc/asound.conf'
 ```

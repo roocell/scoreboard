@@ -149,8 +149,8 @@ if __name__ == '__main__':
         scanMixers = alsaaudio.mixers(scanCards.index(card))
         log.debug("mixers: {}".format(scanMixers))
 
-    m = alsaaudio.Mixer('PCM')
-    m.setvolume(90) # range seems to be non-linear
+    #m = alsaaudio.Mixer('PCM')
+    #m.setvolume(90) # range seems to be non-linear
 
     pygame.mixer.init(buffer=2048)
 
