@@ -13,7 +13,7 @@ So this must be installed by<BR>
 ```
 wget https://raw.githubusercontent.com/roocell/scoreboard/main/install.sh
 chmod 777 install.sh
-sudo ./install.sh
+./install.sh
 sudo reboot
 ```
 Connect raspi to projector.<BR>
