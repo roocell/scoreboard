@@ -1,6 +1,8 @@
 # scoreboard
 scoreboard running on raspi.
 Intended to be used with a projector using HDMI, controlled via wifi using a phone/tablet.
+<img src="/scoreboard.jpg" alt="scoreboard" width="500" height="300">
+<img src="/controller.jpg" alt="controller" width="500" height="300">
 
 # simple install and instructions
 Start with piOs 32-bit desktop with a 'pi' user.<BR>
@@ -19,27 +21,6 @@ sudo reboot
 Connect raspi to projector.<BR>
 Connect phone/tablet to wifi. Network: <b>scoreboard</b> password: <b>12345678</b><BR>
 Once connected over wifi on your phone/tablet, open a browser to http://scoreboard<BR>
-
-<img src="/scoreboard.jpg" alt="scoreboard" width="500" height="300">
-<img src="/controller.jpg" alt="controller" width="500" height="300">
-
-# change subnet
-if you need a different subnet than 192.168.0.X to get internet access
-edit these 3 files. changing 192.168.0 to a different subnet (like 192.168.30)
-```
-/etc/dhcpcd.conf
-/etc/dnsmasq.conf
-/etc/hosts
-```
-and then reboot
-
-# to update
-```
-cd /home/pi/scoreboard
-git pull
-sudo systemctl restart scoreboard
-sudo systemctl restart kiosk
-```
 
 ### fix sound
 Default sound device for pi user seems to output to HDMI fine.<BR>
@@ -62,7 +43,26 @@ pi@raspberrypi:~/scoreboard $  cat /proc/asound/cards
 
 ```
 sudo bash -c 'echo -e "defaults.pcm.card 1\ndefaults.ctl.card 1" > /etc/asound.conf'
-```    
+```       
+    
+### change subnet
+if you need a different subnet than 192.168.0.X to get internet access
+edit these 3 files. changing 192.168.0 to a different subnet (like 192.168.30)
+```
+/etc/dhcpcd.conf
+/etc/dnsmasq.conf
+/etc/hosts
+```
+and then reboot
+
+### to update
+```
+cd /home/pi/scoreboard
+git pull
+sudo systemctl restart scoreboard
+```
+
+ 
     
     
     
