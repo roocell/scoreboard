@@ -9,7 +9,6 @@ from flask_socketio import SocketIO, emit
 import threading
 import pygame
 import alsaaudio
-import os
 
 # create logger
 log = logging.getLogger(__file__)
@@ -20,19 +19,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 log.addHandler(ch)
 
-# create flask and socket
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-
-#http = "https://"
-http = "http://"
-async_mode='eventlet'
-if async_mode == 'eventlet':
-    # we want to use eventlet (otherwise https certfile doens't work on socketio)
-    # but we're using a python thread - so we have to monkeypatch
-    import eventlet
-    eventlet.monkey_patch()
-socketio = SocketIO(app, async_mode=async_mode)
+backupfile = '/home/pi/scoreboard/data.txt'
 
 # data
 homescore = 0
@@ -52,6 +39,60 @@ def getData():
         }
     }
 
+def handle_exception(exc_type, exc_value, exc_traceback):
+    global clock, homescore, awayscore, paused
+    log.debug(exc_value)
+    log.debug(exc_traceback)
+    # we're crashing - store the score and time to disk
+    # so it comes back up with the same data
+    with open(backupfile, 'w') as f:
+        log.debug("backing up data")
+        f.write("clock:" + str(clock) + "\n")
+        f.write("homescore:" + str(homescore) + "\n")
+        f.write("awayscore:" + str(awayscore) + "\n")
+        f.write("paused:" + str(paused) + "\n")
+    exit(-1)
+
+def handle_thread_exception(args):
+    handle_exception(args.exc_type, args.exc_value, args.exc_traceback)
+
+def load_saved_data():
+    global clock, homescore, awayscore, paused
+    try:
+        with open(backupfile, 'r') as f:
+            log.debug("retrieving backup data")
+            for line in f:
+                print(line)
+                key, value = line.strip().split(':')
+                if (key == "clock"):
+                    clock = int(value)
+                    log.debug("restored clock is: {}".format(clock))
+                if (key == "homescore"): homescore = int(value)
+                if (key == "awayscore"): awayscore = int(value)
+                if (key == "paused"): paused = int(value)
+        # remove file so we do this only if it crashed
+        if os.path.exists(backupfile):
+            os.remove(backupfile)
+    except FileNotFoundError:
+        log.debug("backupfile not found.")
+
+# Set up the global exception handler
+sys.excepthook = handle_exception
+threading.excepthook = handle_thread_exception
+
+# create flask and socket
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+
+#http = "https://"
+http = "http://"
+async_mode='eventlet'
+if async_mode == 'eventlet':
+    # we want to use eventlet (otherwise https certfile doens't work on socketio)
+    # but we're using a python thread - so we have to monkeypatch
+    import eventlet
+    eventlet.monkey_patch()
+socketio = SocketIO(app, async_mode=async_mode)
 
 def timeout():
     log.debug("timeout")
@@ -71,6 +112,7 @@ def adjustScore():
     global consecutive_pts_home, consecutive_pts_away
     log.debug("adjustScore")
     diff = int(request.args.get('diff'))
+
     if request.method == 'GET':
         team = request.args.get('team')
         if team == 'home':
@@ -139,13 +181,18 @@ def test_disconnect():
 def loop(socketio):
     global clock
     while True:
-        #log.debug("mainloop")
         time.sleep(1)
         if paused:
             continue
+
+        # to test crash recovery
+        # this will crash once, reload and continue couting down
+        # if (clock == 19*60+57):
+        #     clock = 19*60+55
+        #     raise ValueError("crashing on purpose")
+
         if clock > 0:
             clock = clock - 1
-            log.debug("sending clock")
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
@@ -157,6 +204,7 @@ def cleanup():
 
 if __name__ == '__main__':
     atexit.register(cleanup)
+    load_saved_data()
     t = threading.Thread(target=loop, args=(socketio,))
     t.start()
 

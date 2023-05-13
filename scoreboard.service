@@ -3,5 +3,8 @@ Description=scoreboard
 After=network-online.target
 [Service]
 ExecStart=/home/pi/scoreboard/app.py
+Restart=always
+RestartSec=0
+
 [Install]
 WantedBy=multi-user.target
