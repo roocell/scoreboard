@@ -1,6 +1,6 @@
 
 sudo apt update
-sudo apt full-upgrade
+sudo apt full-upgrade -y
 sudo apt -y install xdotool unclutter
 # sudo bash -c "echo -e 'export DISPLAY=:0.0' >> /root/.bashrc"
 # sudo bash -c "echo -e 'export DISPLAY=:0.0' >> /home/pi/.bashrc"
