@@ -234,7 +234,31 @@ This monkeypatch is required if you want to emit() from a thread.
 We want to do this to update the clock.
 
 ### store git credentials
+```
 git config --global credential.helper 'cache --timeout=3600'
 git config --global user.email "email"
 git config --global user.name "name"
+```
 
+### 3D printing and laser cutting
+The Ottawa library offers free 3D printing and laser cutting services.
+https://biblioottawalibrary.ca/en/imagine-space-0
+https://biblioottawalibrary.ca/en/using-the-equipment
+[explanation of everything for laser cutters at the library.] (https://www.youtube.com/watch?v=WIw2c9lO7N4)
+                                              
+The Epilogue Helix has a working area of 24"X18"
+The Epilogue Mini has a working area of 24"X12"
+
+You have to do 'in-person' orientation before using it.
+Uses [InkScape](https://inkscape.org/) software and SVG files.
+[InkScape walkthrough] (https://www.youtube.com/watch?v=WIw2c9lO7N4&t=615s)
+
+There's some specific things to follow here to save/setup the job properly.
+[Format a vector for cutting] (https://www.youtube.com/watch?v=WIw2c9lO7N4&t=885s)
+
+Have to save as PDF - it's the format the machines use.
+Certification requires taking this quiz: https://biblioottawalibrary.ca/en/laser-cutter-quiz
+
+https://www.amazon.ca/AdirOffice-Acrylic-Plexiglass-Sheet-Weatherproof/dp/B072J4HPV8/ref=asc_df_B072J4HPV8/?tag=googleshopc0c-20&linkCode=df0&hvadid=372607562328&hvpos=&hvnetw=g&hvrand=9565647741502626130&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9000680&hvtargid=pla-566986578870&th=1
+https://www.amazon.ca/Expanded-Printable-Displays-Printing-Waterproof/dp/B08N8MG8QG/ref=asc_df_B08N8MG8QG/?tag=googleshopc0c-20&linkCode=df0&hvadid=579317878700&hvpos=&hvnetw=g&hvrand=13719793600389480199&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9000680&hvtargid=pla-1062658519802&th=1
+https://www.amazon.ca/Pack-Plastic-Moldable-Textured-Technology/dp/B08SJ4N99Y/ref=sr_1_6?crid=1S2WG3GN80R6Y&keywords=ABS%2Bsheet&qid=1684526388&s=industrial&sprefix=abs%2Bshee%2Cindustrial%2C86&sr=1-6&th=1
