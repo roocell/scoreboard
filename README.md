@@ -262,3 +262,7 @@ Certification requires taking this quiz: https://biblioottawalibrary.ca/en/laser
 https://www.amazon.ca/AdirOffice-Acrylic-Plexiglass-Sheet-Weatherproof/dp/B072J4HPV8/ref=asc_df_B072J4HPV8/?tag=googleshopc0c-20&linkCode=df0&hvadid=372607562328&hvpos=&hvnetw=g&hvrand=9565647741502626130&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9000680&hvtargid=pla-566986578870&th=1
 https://www.amazon.ca/Expanded-Printable-Displays-Printing-Waterproof/dp/B08N8MG8QG/ref=asc_df_B08N8MG8QG/?tag=googleshopc0c-20&linkCode=df0&hvadid=579317878700&hvpos=&hvnetw=g&hvrand=13719793600389480199&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9000680&hvtargid=pla-1062658519802&th=1
 https://www.amazon.ca/Pack-Plastic-Moldable-Textured-Technology/dp/B08SJ4N99Y/ref=sr_1_6?crid=1S2WG3GN80R6Y&keywords=ABS%2Bsheet&qid=1684526388&s=industrial&sprefix=abs%2Bshee%2Cindustrial%2C86&sr=1-6&th=1
+
+### other projects
+[3D printed 7seg display](https://www.youtube.com/watch?v=Z7xdRMfPbP8)
+[for above](https://www.thingiverse.com/thing:2977443)
