@@ -266,3 +266,7 @@ https://www.amazon.ca/Pack-Plastic-Moldable-Textured-Technology/dp/B08SJ4N99Y/re
 ### other projects
 [3D printed 7seg display](https://www.youtube.com/watch?v=Z7xdRMfPbP8)
 [for above](https://www.thingiverse.com/thing:2977443)
+                                              
+### blender
+https://youtu.be/R-Vq2O-hvfo
+https://www.youtube.com/watch?v=-OynHqYd_1I
