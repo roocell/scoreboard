@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os, time, sys, datetime
-import logging
+from logger import log as log
 import atexit
 from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask import Response, redirect, url_for
@@ -10,14 +10,10 @@ import threading
 import pygame
 import alsaaudio
 
-# create logger
-log = logging.getLogger(__file__)
-log.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-log.addHandler(ch)
+import board
+import neopixel
+import neo7seg
+import asyncio
 
 backupfile = '/home/pi/scoreboard/data.txt'
 
@@ -28,6 +24,18 @@ clock = 20*60
 paused = 1
 consecutive_pts_home = 0
 consecutive_pts_away = 0
+
+# Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
+# NeoPixels must be connected to D10, D12, D18 or D21 to work.
+pixel_pin = board.D21
+
+# The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
+# For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
+ORDER = neopixel.GRB
+num_pixels = 28*4
+pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.5, auto_write=False, pixel_order=ORDER)
+digit = neo7seg.Neo7Seg(pixels, 0, 1)
+digit.set(8)
 
 def getData():
     return { 
@@ -193,6 +201,7 @@ def loop(socketio):
 
         if clock > 0:
             clock = clock - 1
+            digit.set(str(clock%10))
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
