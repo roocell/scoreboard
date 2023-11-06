@@ -63,26 +63,25 @@ lookup['Y'] = lookup['y'] = [2,4,5,6,0]
 lookup['-'] = [5]
 
 green = (0, 255, 0)
+red = (255, 0, 0)
 
-# need a global in order to init neopixels first before instantiating this class
-pix_per_seg = 4
-def get_num_pixels(num_digits):
-    return  pix_per_seg*7*num_digits;
+# 'digits' input is a list of integers describing the per-segment pixel count
+# this is to support multiple 7seg characters that have different sizes
+# length of this list is the number of digits
 
 class Neo7Seg:
-    def __init__(self, pixels, offset, num_digits):
+    def __init__(self, pixels, offset, digits):
         self._pixels = pixels  # the already instantiated neopixel object
         self._offset = offset   # the stringing offset of the first pix in the neopixel chain
-        self._num_digits = num_digits
+        self._num_digits = len(digits)
+        self._digits = digits
         self._value = "00"
         self._color = green
         self.clear()
 
     def clear(self):
-        for d in range(self._num_digits):
-            for s in range(7):
-                for p in range (0, pix_per_seg):
-                    self._pixels[self._offset + (d * pix_per_seg * 7) + (s * pix_per_seg) + p] = (0,0,0)
+        for p in range(len(self._pixels)):
+            self._pixels[p] = (0,0,0)
         self._pixels.show()
 
     # pixels = neopixels instantiated outside this function
@@ -96,22 +95,26 @@ class Neo7Seg:
 
         if isinstance(value, float):
             val = int(value)
-            if val >= 100 and self._num_digits > 2:
-                val = 99
             string = str(val).zfill(2)
         elif isinstance(value, int):
-            if value >= 100 and self._num_digits > 2:
-                value = 99
             string = str(value).zfill(2)
         else:
             string = value
 
         c = 0
+        char_pixel_start = self._offset
         for char in string:
-            character = lookup[char]
+            # account for out of order lookup definition
+            # so we can track char_pixel_start properly
+            character = sorted(lookup[char])
+            pix_per_seg = self._digits[c]
+            #log.debug(f"char_pixel_start {char_pixel_start} char {char} pix_per_seg {pix_per_seg} character {character}")
             for s in character:
                 for p in range (0, pix_per_seg):
-                    self._pixels[self._offset + (c * pix_per_seg * 7) + (s * pix_per_seg) + p] = color
+                    next_pixel = char_pixel_start + (s * pix_per_seg) + p
+                    self._pixels[next_pixel] = color
+                    #log.debug(f"next_pixel {next_pixel}")
+            char_pixel_start += 7 * pix_per_seg
             c += 1
         self._pixels.show()
 
@@ -137,10 +140,20 @@ class Neo7Seg:
 
         i = 0
         while time.monotonic() <= (start + duration_sec):
-            for d in range(self._num_digits):
-                for s in range(7):
+            c = 0
+            char_pixel_start = self._offset
+            for char in string:
+                # account for out of order lookup definition
+                # so we can track char_pixel_start properly
+                character = sorted(lookup[char])
+                pix_per_seg = self._digits[c]
+                for s in character:
                     for p in range (0, pix_per_seg):
-                        self._pixels[self._offset + (d * pix_per_seg * 7) + (s * pix_per_seg) + p] = rb[(i + s) % 7]
+                        next_pixel = char_pixel_start + (s * pix_per_seg) + p
+                        self._pixels[next_pixel] = rb[(i + s) % 7]
+                char_pixel_start += 7 * pix_per_seg
+                c += 1
+                        
             i += 1
             self._pixels.show()
             await asyncio.sleep(0.05)

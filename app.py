@@ -32,10 +32,10 @@ pixel_pin = board.D21
 # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
 ORDER = neopixel.GRB
-num_pixels = 28*4
+num_pixels = 7*4 + 7*3
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.5, auto_write=False, pixel_order=ORDER)
-digit = neo7seg.Neo7Seg(pixels, 0, 1)
-digit.set(8)
+digit = neo7seg.Neo7Seg(pixels, 0, [4,3]) # 2 digits, one with 4-led segments, the next with 3-led segments
+digit.set("--")
 
 def getData():
     return { 
@@ -201,7 +201,7 @@ def loop(socketio):
 
         if clock > 0:
             clock = clock - 1
-            digit.set(str(clock%10))
+            digit.set(str(clock)[-2:])
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
