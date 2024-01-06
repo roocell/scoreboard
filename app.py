@@ -32,10 +32,10 @@ pixel_pin = board.D21
 # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
 ORDER = neopixel.GRB
-num_pixels = 7*4 + 7*3
+num_pixels = 7*4*3 + 7*4*4
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.5, auto_write=False, pixel_order=ORDER)
-digit = neo7seg.Neo7Seg(pixels, 0, [4,3]) # 2 digits, one with 4-led segments, the next with 3-led segments
-digit.set("--")
+digit = neo7seg.Neo7Seg(pixels, 0, [3,3,3,3,4,4,4,4]) # 8 digits, 4 with 4-led segments, the next 4 with 4-led segments
+digit.set(0,"--------")
 
 def getData():
     return { 
@@ -118,7 +118,7 @@ def adjustScore():
     global homescore
     global awayscore
     global consecutive_pts_home, consecutive_pts_away
-    log.debug("adjustScore")
+    #log.debug("adjustScore")
     diff = int(request.args.get('diff'))
 
     if request.method == 'GET':
@@ -144,6 +144,10 @@ def adjustScore():
 
     else:
         log.debug("adjustScore ERR")
+
+    digit.set(4, min(homescore, 99), neo7seg.blue)
+    digit.set(6, min(awayscore, 99), neo7seg.red)
+
     return "OK"
 
 @app.route('/pauseResume', methods = ['POST', 'GET'])
@@ -201,7 +205,10 @@ def loop(socketio):
 
         if clock > 0:
             clock = clock - 1
-            digit.set(str(clock)[-2:])
+            # clock is in seconds here - but we want to display minutes/seconds
+            minutes = min(int(clock / 60), 99) # max out at 99 because we have only 2 digits
+            seconds = int(clock % 60)
+            digit.set(0, str(minutes) + str(seconds))
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
@@ -210,6 +217,9 @@ def loop(socketio):
 
 def cleanup():
     log.debug("cleaning up")
+    # turn the LEDs off
+    pixels.fill((0,0,0))
+    pixels.show()
 
 if __name__ == '__main__':
     atexit.register(cleanup)
@@ -230,7 +240,14 @@ if __name__ == '__main__':
 
     log.debug("restarting kiosk")
     os.system("sudo systemctl restart kiosk.service")
-    
+
+    # startup sequence
+    # for i in range(1,4):
+    #     char = str(i)
+    #     digit.set(0, char+char+char+char+char+char+char+char)
+    #     pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
+    #     time.sleep(1)
+
     log.debug("starting HTTP")
     socketio.run(app,
         debug=True, host='0.0.0.0', port=80, use_reloader=False)

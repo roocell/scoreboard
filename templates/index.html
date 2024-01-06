@@ -181,7 +181,7 @@
        // server Response
     });
   }
-  function adjustClock(value)
+  function adjustClockOnServer(value)
   {
     $.getJSON('/adjustClock?value='+value, {},
     function(data) {
@@ -248,7 +248,7 @@
     digitSpan.innerHTML = newValue;
    
     /* send clock value to python */
-    adjustClock(getClockValue());
+    adjustClockOnServer(getClockValue());
   }
 
   let HIGHLIGHT_COLOR = "green"
@@ -322,6 +322,7 @@
   function resetClock()
   {
     setClockValue(0);
+    adjustClockOnServer(0);
   }
   function setClockValue(value)
   {

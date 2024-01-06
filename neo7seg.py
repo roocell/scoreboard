@@ -9,6 +9,10 @@ import neopixel
 import asyncio
 from logger import log as log
 
+# TODO: could avoid the flicker when clearing segments
+#       if we remember last digit, then only change the segments
+#       we need to.
+
 # the 7 seg is a series of 7 (4 pixel) segments
 # the order of segments is as follow
 # described using an index 0..6
@@ -64,6 +68,7 @@ lookup['-'] = [5]
 
 green = (0, 255, 0)
 red = (255, 0, 0)
+blue = (0, 0, 255)
 
 # 'digits' input is a list of integers describing the per-segment pixel count
 # this is to support multiple 7seg characters that have different sizes
@@ -76,23 +81,22 @@ class Neo7Seg:
         self._num_digits = len(digits)
         self._digits = digits
         self._value = "00"
-        self._color = green
-        self.clear()
+        self._color = [green] * 8
+        self.clearall()
 
-    def clear(self):
+    def clearall(self):
         for p in range(len(self._pixels)):
             self._pixels[p] = (0,0,0)
-        self._pixels.show()
+
+    def clearpart(self, pixstart, length):
+        for p in range(pixstart, pixstart + length):
+            self._pixels[p] = (0,0,0)
 
     # pixels = neopixels instantiated outside this function
     # offset = the offset for the first pixel in 7seg in the entire neopixel chain
     # value = character to display
     # color = (r,b,g)
-    def set(self, value, color = green, wait = 0.5):
-        self._value = value
-        self._color = color
-        self.clear()
-
+    def set(self, start, value, color = green, wait = 0.5):
         if isinstance(value, float):
             val = int(value)
             string = str(val).zfill(2)
@@ -101,25 +105,35 @@ class Neo7Seg:
         else:
             string = value
 
+        end = len(string)
+        self._value = self._value[:start] + string + self._value[start + len(string):]
+        #log.debug(f"{value} {start} {end} {string} -> {self._value}")
+
+        for c in range(start, start + len(string)):
+            self._color[c] = color
+
+        #log.debug(f"colors {self._color}")
+
         c = 0
         char_pixel_start = self._offset
-        for char in string:
+        for char in self._value:
             # account for out of order lookup definition
             # so we can track char_pixel_start properly
             character = sorted(lookup[char])
             pix_per_seg = self._digits[c]
-            #log.debug(f"char_pixel_start {char_pixel_start} char {char} pix_per_seg {pix_per_seg} character {character}")
+                  
+            self.clearpart(char_pixel_start, pix_per_seg*7)
+
+            #log.debug(f"c {c} char_pixel_start {char_pixel_start} char {char} pix_per_seg {pix_per_seg} character {character}")
             for s in character:
                 for p in range (0, pix_per_seg):
                     next_pixel = char_pixel_start + (s * pix_per_seg) + p
-                    self._pixels[next_pixel] = color
+                    self._pixels[next_pixel] = self._color[c]
                     #log.debug(f"next_pixel {next_pixel}")
             char_pixel_start += 7 * pix_per_seg
             c += 1
         self._pixels.show()
 
-#        if len(string) > self._num_digits:
-            # cycles through the characters in the string
 
     # not a good idea to use _value to keep track of a score or something like that.
     # but this is here is case the app wants to get the current state of the 7seg(s)
