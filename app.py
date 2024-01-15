@@ -37,6 +37,13 @@ pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.5, auto_write=Fal
 digit = neo7seg.Neo7Seg(pixels, 0, [3,3,3,3,4,4,4,4]) # 8 digits, 4 with 4-led segments, the next 4 with 4-led segments
 digit.set(0,"--------")
 
+def replace_leading_zero(source, char=" "):
+    stripped = source.lstrip('0')
+    result = char * (len(source) - len(stripped)) + stripped
+    if result.isspace():
+        result = " 0"  # assume 2 digit number
+    return result
+
 def getData():
     return { 
         'data' : {
@@ -145,8 +152,13 @@ def adjustScore():
     else:
         log.debug("adjustScore ERR")
 
-    digit.set(4, min(homescore, 99), neo7seg.blue)
-    digit.set(6, min(awayscore, 99), neo7seg.red)
+    # change to string and replace leading 0 with space
+    homescorestr = str(min(homescore, 99)).zfill(2)
+    awayscorestr = str(min(awayscore, 99)).zfill(2)
+    homescorestr = replace_leading_zero(homescorestr)
+    awayscorestr = replace_leading_zero(awayscorestr)
+    digit.set(4, homescorestr, neo7seg.green)
+    digit.set(6, awayscorestr, neo7seg.green)
 
     return "OK"
 
@@ -206,14 +218,20 @@ def loop(socketio):
         if clock > 0:
             clock = clock - 1
             # clock is in seconds here - but we want to display minutes/seconds
-            minutes = min(int(clock / 60), 99) # max out at 99 because we have only 2 digits
-            seconds = int(clock % 60)
-            digit.set(0, str(minutes) + str(seconds))
+            minutes = str(min(int(clock / 60), 99)).zfill(2) # max out at 99 because we have only 2 digits
+            seconds = str(int(clock % 60)).zfill(2)
+            clockstr = minutes + seconds
+            # replace leading zero with space (easier to read)
+            clockstr = replace_leading_zero(clockstr)
+            #log.debug(clockstr)
+            digit.set(0, clockstr)
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
             elif clock < 10:
                 pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
+        else:
+            digit.set(0, "   0")
 
 def cleanup():
     log.debug("cleaning up")
@@ -248,6 +266,6 @@ if __name__ == '__main__':
     #     pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
     #     time.sleep(1)
 
-    log.debug("starting HTTP")
+    log.debug("starting HTTP for scoreboard")
     socketio.run(app,
         debug=True, host='0.0.0.0', port=80, use_reloader=False)

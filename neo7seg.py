@@ -65,6 +65,7 @@ lookup['W'] = lookup['w'] = [2,5,4,0]
 lookup['X'] = lookup['x'] = [2,4,5,1,6]
 lookup['Y'] = lookup['y'] = [2,4,5,6,0]
 lookup['-'] = [5]
+lookup[' '] = []
 
 green = (0, 255, 0)
 red = (255, 0, 0)
