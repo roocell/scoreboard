@@ -3,7 +3,10 @@ scoreboard running on raspi.
 Intended to be used with a projector using HDMI, controlled via wifi using a phone/tablet.
 <img src="/scoreboard.jpg" alt="scoreboard" width="500" height="300">
 <img src="/controller.jpg" alt="controller" width="500" height="300">
-
+![1](/1.jpg)
+![1](/2.jpg)
+![1](/3.jpg)
+![1](/4.jpg)
 # simple install and instructions
 Start with piOs 32-bit desktop with a 'pi' user.<BR>
 This app sets up wifi0 and uses it to function.<BR>
