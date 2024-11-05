@@ -319,11 +319,27 @@
     }
     highlightClockDigit(highlight);
   }
+
+  function resetScores()
+  {
+    var homescore = parseInt(document.getElementById("home").innerHTML);
+    var awayscore = parseInt(document.getElementById("away").innerHTML);
+    adjustScore(-homescore, "home");
+    adjustScore(-awayscore, "away");
+  }
+
   function resetClock()
   {
     setClockValue(0);
     adjustClockOnServer(0);
   }
+
+  function resetAll()
+  {
+    resetClock();
+    resetScores();
+  }
+
   function setClockValue(value)
   {
     /* setClock will not be called during pause/adjusting
@@ -393,7 +409,7 @@
     <div class="btn" onClick="adjustClockDigit('right');"> > </div>
     <div class="btn" onClick="adjustClockValue(1);">&#9650;</div>
     <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
-    <div class="btn" onClick="resetClock();">&#8634;</div>
+    <div class="btn" onClick="resetAll();">&#8634;</div>
     {% endif %}
   </div>
 
