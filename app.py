@@ -20,10 +20,12 @@ backupfile = '/home/pi/scoreboard/data.txt'
 # data
 homescore = 0
 awayscore = 0
-clock = 20*60
+clock = 8*60
 paused = 1
 consecutive_pts_home = 0
 consecutive_pts_away = 0
+
+score_just_changed = False
 
 # Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
 # NeoPixels must be connected to D10, D12, D18 or D21 to work.
@@ -133,6 +135,7 @@ def adjustScore():
     global homescore
     global awayscore
     global consecutive_pts_home, consecutive_pts_away
+    global score_just_changed
     #log.debug("adjustScore")
     diff = int(request.args.get('diff'))
 
@@ -161,7 +164,9 @@ def adjustScore():
         log.debug("adjustScore ERR")
 
     # change to string and replace leading 0 with space
+    score_just_changed = True
     setScore()
+    
 
     return "OK"
 
@@ -209,6 +214,7 @@ def test_disconnect():
 
 def loop(socketio):
     global clock
+    global score_just_changed
     while True:
         time.sleep(1)
         if paused:
@@ -238,7 +244,8 @@ def loop(socketio):
                 pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
 
             # every 10 seconds flash the score in red/blue
-            if (clock % 10) == 0:
+            if (clock % 10) == 0 or score_just_changed:
+                    score_just_changed = False
                     setScore()
             else:
                 digit.set(0, clockstr)
