@@ -17,54 +17,53 @@ from logger import log as log
 # the order of segments is as follow
 # described using an index 0..6
 #   3 3 3 3
-#  2       4
-#  2       4
-#  2       4
-#  2       4
-#   5 5 5 5
-#  1       6
-#  1       6
-#  1       6
-#  1       6
-#   0 0 0 0
+#  4       2
+#  4       2
+#  4       2
+#  4       2
+#   1 1 1 1
+#  5       0
+#  5       0
+#  5       0
+#  5       0
+#   6 6 6 6
 # we can define characters as an array of segment indicies
 # order of indicies doesn't matter
 lookup = {} # dict to use string as index
-lookup['0'] = [0,1,2,3,4,6]
-lookup['1'] = [4,6]
-lookup['2'] = lookup['Z'] = lookup['z'] = [3,4,5,1,0]
-lookup['3'] = [0,6,5,4,3]
-lookup['4'] = [2,4,5,6]
-lookup['5'] = lookup['S'] = lookup['s'] = [3,2,5,6,0]
-lookup['6'] = [3,2,5,6,1,0]
-lookup['7'] = [3,4,6]
-lookup['8'] = [2,3,4,5,1,6,0]
-lookup['9'] = [2,3,4,5,6,0]
-lookup['A'] = lookup['a'] = [1,6,5,2,3,4]
-lookup['B'] = lookup['b'] = [1,2,5,6,0]
-lookup['C'] = lookup['c'] = [3,2,1,0]
-lookup['D'] = lookup['d'] = [1,5,0,6,7]
-lookup['E'] = lookup['e'] = [2,3,5,1,0]
-lookup['F'] = lookup['f'] = [1,2,5,3]
-lookup['G'] = lookup['g'] = [3,2,1,0,6]
-lookup['H'] = lookup['h'] = [2,5,1,6]
-lookup['I'] = lookup['i'] = [6]
-lookup['J'] = lookup['j'] = [4,6,0,1]
-lookup['K'] = lookup['k'] = [2,5,1,6,3]
-lookup['L'] = lookup['l'] = [2,1,0]
-lookup['M'] = lookup['m'] = [1,5,6,3]
-lookup['N'] = lookup['n'] = [1,6,5]
-lookup['O'] = lookup['o'] = [1,5,6,0]
-lookup['P'] = lookup['p'] = [1,5,2,3,4]
-lookup['Q'] = lookup['q'] = [5,2,3,4,6]
-lookup['R'] = lookup['r'] = [1,5]
-lookup['T'] = lookup['t'] = [0,1,5,2]
-lookup['U'] = lookup['u'] = [2,1,0,6,4]
-lookup['V'] = lookup['v'] = [1,2,3]
-lookup['W'] = lookup['w'] = [2,5,4,0]
-lookup['X'] = lookup['x'] = [2,4,5,1,6]
-lookup['Y'] = lookup['y'] = [2,4,5,6,0]
-lookup['-'] = [5]
+lookup['0'] = [0,2,3,4,5,6]
+lookup['1'] = [0,2]
+lookup['2'] = lookup['Z'] = lookup['z'] = [3,2,1,5,6]
+lookup['3'] = [3,2,1,0,6]
+lookup['4'] = [4,2,1,0]
+lookup['5'] = lookup['S'] = lookup['s'] = [3,4,1,0,6]
+lookup['6'] = lookup['G'] = lookup['g'] = [3,4,1,5,6,0]
+lookup['7'] = [3,2,0]
+lookup['8'] = [0,1,2,3,4,5,6]
+lookup['9'] = [3,4,2,1,0,6]
+lookup['A'] = lookup['a'] = [4,3,2,1,5,0]
+lookup['B'] = lookup['b'] = [4,1,5,0,6]
+lookup['C'] = lookup['c'] = [3,4,5,6]
+lookup['D'] = lookup['d'] = [2,1,0,5,6]
+lookup['E'] = lookup['e'] = [3,4,1,5,6]
+lookup['F'] = lookup['f'] = [3,4,1,5]
+lookup['H'] = lookup['h'] = [4,1,5,0]
+lookup['I'] = lookup['i'] = [0]
+lookup['J'] = lookup['j'] = [6,0,2]
+lookup['K'] = lookup['k'] = [4,1,2,5,0]
+lookup['L'] = lookup['l'] = [4,5]
+lookup['M'] = lookup['m'] = [5,4,3,2,0]
+lookup['N'] = lookup['n'] = [5,1,0]
+lookup['O'] = lookup['o'] = [5,6,1,0]
+lookup['P'] = lookup['p'] = [3,4,2,1,5]
+lookup['Q'] = lookup['q'] = [4,3,2,1,0]
+lookup['R'] = lookup['r'] = [5,1]
+lookup['T'] = lookup['t'] = [4,1,5,6]
+lookup['U'] = lookup['u'] = [5,0,6]
+lookup['V'] = lookup['v'] = [4,5,6,0,2]
+lookup['W'] = lookup['w'] = [4,2,1,5,0,6]
+lookup['X'] = lookup['x'] = [4,2,1,5,0]
+lookup['Y'] = lookup['y'] = [4,2,1,0]
+lookup['-'] = [1]
 lookup[' '] = []
 
 green = (0, 255, 0)
@@ -132,7 +131,11 @@ class Neo7Seg:
                     self._pixels[next_pixel] = self._color[c]
                     #log.debug(f"next_pixel {next_pixel}")
             char_pixel_start += 7 * pix_per_seg
+            if (c >= self._num_digits):
+                log.debug("too many characters in message - quit")
+                break
             c += 1
+
         self._pixels.show()
 
 

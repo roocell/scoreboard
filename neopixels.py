@@ -17,7 +17,7 @@ import neopixel
 pixel_pin = board.D21
 
 # The number of NeoPixels
-num_pixels = 7*4 + 7*3
+num_pixels = 140*2
 
 # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
@@ -58,44 +58,28 @@ def rainbow_cycle(wait):
         pixels.show()
         time.sleep(wait)
 
-
-while True:
+try:
+  while True:
     # Comment this line out if you have RGBW/GRBW NeoPixels
     pixels.fill((255, 0, 0))
     # Uncomment this line if you have RGBW/GRBW NeoPixels
     # pixels.fill((255, 0, 0, 0))
+
     pixels.show()
     time.sleep(1)
 
-    # Comment this line out if you have RGBW/GRBW NeoPixels
     pixels.fill((0, 255, 0))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 255, 0, 0))
     pixels.show()
     time.sleep(1)
 
-    # Comment this line out if you have RGBW/GRBW NeoPixels
     pixels.fill((0, 0, 255))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 0, 255, 0))
     pixels.show()
     time.sleep(1)
 
-    # alternate segments
-    for s in [0,2,4,6]:
-        for p in range(4):
-            pixels[s*4 + p] = (255, 0, 0)
-    for s in [1,3,5]:
-        for p in range(4):
-            pixels[s*4 + p] = (0, 255, 0)
-
-    for s in [0,2,4,6]:
-        for p in range(3):
-            pixels[28 + s*3 + p] = (255, 0, 0)
-    for s in [1,3,5]:
-        for p in range(3):
-            pixels[28 + s*3 + p] = (0, 255, 0)
+except KeyboardInterrupt:
+    pixels.fill((0,0,0))
+    print("ctrl-c hit")
     pixels.show()
     time.sleep(1)
 
-    rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step
+    #rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step

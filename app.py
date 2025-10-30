@@ -32,10 +32,10 @@ pixel_pin = board.D21
 # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
 ORDER = neopixel.GRB
-num_pixels = 7*4*3 + 7*4*4
+num_pixels = 7*10*4
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.5, auto_write=False, pixel_order=ORDER)
-digit = neo7seg.Neo7Seg(pixels, 0, [3,3,3,3,4,4,4,4]) # 8 digits, 4 with 4-led segments, the next 4 with 4-led segments
-digit.set(0,"--------")
+digit = neo7seg.Neo7Seg(pixels, 0, [10,10,10,10]) # 4 digits, 4 with 10-led segments
+digit.set(0,"----")
 
 def replace_leading_zero(source, char=" "):
     stripped = source.lstrip('0')
@@ -120,6 +120,14 @@ def index():
 def scoreboard():
     return render_template('index.html', http=http, mode='scoreboard');
 
+def setScore():
+    homescorestr = str(min(homescore, 99)).zfill(2)
+    awayscorestr = str(min(awayscore, 99)).zfill(2)
+    homescorestr = replace_leading_zero(homescorestr)
+    awayscorestr = replace_leading_zero(awayscorestr)
+    digit.set(0, homescorestr, neo7seg.red)
+    digit.set(2, awayscorestr, neo7seg.blue)
+
 @app.route('/adjustScore', methods = ['POST', 'GET'])
 def adjustScore():
     global homescore
@@ -153,12 +161,7 @@ def adjustScore():
         log.debug("adjustScore ERR")
 
     # change to string and replace leading 0 with space
-    homescorestr = str(min(homescore, 99)).zfill(2)
-    awayscorestr = str(min(awayscore, 99)).zfill(2)
-    homescorestr = replace_leading_zero(homescorestr)
-    awayscorestr = replace_leading_zero(awayscorestr)
-    digit.set(4, homescorestr, neo7seg.green)
-    digit.set(6, awayscorestr, neo7seg.green)
+    setScore()
 
     return "OK"
 
@@ -172,6 +175,8 @@ def pauseResume():
         else:
             log.debug("resume")
             paused = 0
+            # when we resume/start show the score first
+            setScore()
     else:
         log.debug("pauseResume ERR")
     # emit pause state to other clients
@@ -207,6 +212,8 @@ def loop(socketio):
     while True:
         time.sleep(1)
         if paused:
+            # pause with score
+            setScore()
             continue
 
         # to test crash recovery
@@ -224,14 +231,22 @@ def loop(socketio):
             # replace leading zero with space (easier to read)
             clockstr = replace_leading_zero(clockstr)
             #log.debug(clockstr)
-            digit.set(0, clockstr)
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
             elif clock < 10:
                 pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
+
+            # every 10 seconds flash the score in red/blue
+            if (clock % 10) == 0:
+                    setScore()
+            else:
+                digit.set(0, clockstr)
+            
         else:
-            digit.set(0, "   0")
+            # end with score
+            setScore()
+
 
 def cleanup():
     log.debug("cleaning up")
