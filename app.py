@@ -220,6 +220,7 @@ def adjustClock():
         clock = int(request.args.get('value'))
     else:
         log.debug("adjustClock ERR")
+    setClock()
     # emit clock to other clients
     socketio.emit('clock', getData(), namespace='/status', broadcast=True)
     return "OK"
@@ -235,6 +236,20 @@ def connect():
 @socketio.on('disconnect', namespace='/status')
 def test_disconnect():
     log.debug('flask client disconnected')
+
+def setClock():
+    global clock
+    # clock is in seconds here - but we want to display minutes/seconds
+    minutes = str(min(int(clock / 60), 99)).zfill(2) # max out at 99 because we have only 2 digits
+    seconds = str(int(clock % 60)).zfill(2)
+    clockstr = minutes + seconds
+    # replace leading zero with space (easier to read)
+    clockstr = replace_leading_zero(clockstr)
+    #log.debug(clockstr)
+    if (clockmode == 1):
+        digit.set(4, clockstr)
+    else:
+        digit.set(0, clockstr)
 
 def loop(socketio):
     global clock
@@ -254,13 +269,7 @@ def loop(socketio):
 
         if clock > 0:
             clock = clock - 1
-            # clock is in seconds here - but we want to display minutes/seconds
-            minutes = str(min(int(clock / 60), 99)).zfill(2) # max out at 99 because we have only 2 digits
-            seconds = str(int(clock % 60)).zfill(2)
-            clockstr = minutes + seconds
-            # replace leading zero with space (easier to read)
-            clockstr = replace_leading_zero(clockstr)
-            #log.debug(clockstr)
+
             socketio.emit('clock', getData(), namespace='/status', broadcast=True)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
@@ -268,15 +277,11 @@ def loop(socketio):
                 pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
 
             #every 10 seconds flash the score in red/blue
-            if (clockmode == 1):
-                if ((clock % 10) == 0 or score_just_changed):
-                    score_just_changed = False
-                    setScore()
-                else:
-                  digit.set(4, clockstr)
+            if (clockmode == 1 and (clock % 5) == 0 or score_just_changed):
+                score_just_changed = False
+                setScore()
             else:
-              digit.set(0, clockstr)
-            
+                setClock()
         else:
             if (clockmode == 1):
                 # end with score

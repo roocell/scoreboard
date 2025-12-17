@@ -356,14 +356,17 @@
 
   function resetClock()
   {
-    setClockValue(0);
-    adjustClockOnServer(0);
+    setClockValue(600);
+    adjustClockOnServer(getClockValue());
   }
 
   function resetAll()
   {
-    resetClock();
-    resetScores();
+    if (confirm("Confirm reset."))
+    {
+      resetClock();
+      resetScores();
+    }
   }
 
   function setClockValue(value)
