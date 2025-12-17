@@ -22,6 +22,7 @@ homescore = 0
 awayscore = 0
 clock = 8*60
 paused = 1
+clockmode = 0 # 0 = default, 1 = periodic
 consecutive_pts_home = 0
 consecutive_pts_away = 0
 
@@ -34,10 +35,10 @@ pixel_pin = board.D21
 # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
 ORDER = neopixel.GRB
-num_pixels = 7*10*4
+num_pixels = 7*10*8
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.5, auto_write=False, pixel_order=ORDER)
-digit = neo7seg.Neo7Seg(pixels, 0, [10,10,10,10]) # 4 digits, 4 with 10-led segments
-digit.set(0,"----")
+digit = neo7seg.Neo7Seg(pixels, 0, [10,10,10,10,10,10,10,10]) # 4 digits, 4 with 10-led segments
+digit.set(0,"--------")
 
 def replace_leading_zero(source, char=" "):
     stripped = source.lstrip('0')
@@ -127,8 +128,8 @@ def setScore():
     awayscorestr = str(min(awayscore, 99)).zfill(2)
     homescorestr = replace_leading_zero(homescorestr)
     awayscorestr = replace_leading_zero(awayscorestr)
-    digit.set(0, homescorestr, neo7seg.red)
-    digit.set(2, awayscorestr, neo7seg.blue)
+    digit.set(4, homescorestr, neo7seg.red)
+    digit.set(6, awayscorestr, neo7seg.blue)
 
 @app.route('/adjustScore', methods = ['POST', 'GET'])
 def adjustScore():
@@ -175,10 +176,8 @@ def pauseResume():
     global paused
     if request.method == 'GET':
         if int(request.args.get('paused')) == 1:
-            log.debug("pause")
             paused = 1
         else:
-            log.debug("resume")
             paused = 0
             # when we resume/start show the score first
             setScore()
@@ -186,6 +185,31 @@ def pauseResume():
         log.debug("pauseResume ERR")
     # emit pause state to other clients
     socketio.emit('data', getData(), namespace='/status', broadcast=True)
+    return "OK"
+
+@app.route('/toggleclockmode', methods = ['POST', 'GET'])
+def toggleclockmode():
+    global clockmode
+    if request.method == 'GET':
+        if int(request.args.get('clockmode')) == 1:
+            clockmode = 1
+        else:
+            clockmode = 0
+    else:
+        log.debug("clockmode ERR")
+
+    # display score (fixes race condition when turning off periodic)
+    setScore()
+
+    # emit pause state to other clients
+    socketio.emit('data', getData(), namespace='/status', broadcast=True)
+    return "OK"
+
+@app.route('/playsound', methods = ['POST', 'GET'])
+def playsound():
+    if request.method == 'GET':
+        if request.args.get('value'):
+            pygame.mixer.Sound("/home/pi/scoreboard/audio/"+request.args.get('value')).play()
     return "OK"
 
 @app.route('/adjustClock', methods = ['POST', 'GET'])
@@ -243,16 +267,20 @@ def loop(socketio):
             elif clock < 10:
                 pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
 
-            # every 10 seconds flash the score in red/blue
-            if (clock % 10) == 0 or score_just_changed:
+            #every 10 seconds flash the score in red/blue
+            if (clockmode == 1):
+                if ((clock % 10) == 0 or score_just_changed):
                     score_just_changed = False
                     setScore()
+                else:
+                  digit.set(4, clockstr)
             else:
-                digit.set(0, clockstr)
+              digit.set(0, clockstr)
             
         else:
-            # end with score
-            setScore()
+            if (clockmode == 1):
+                # end with score
+                setScore()
 
 
 def cleanup():

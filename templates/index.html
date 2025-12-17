@@ -102,6 +102,32 @@
       }
   </style>
 
+  <style>
+      .btnsound {
+        --clockmode: 0; /* custom CSS property */
+        font-family: 'Rubik Mono One', sans-serif;
+        display: inline-block;
+        align-items: center;
+        width: 400px;
+        height: 100px;
+        line-height: 100px;
+        background-color: #3498db;
+        color: #fff;
+        text-align: center;
+        border-radius: 10px;
+        font-size: 24px;
+        text-decoration: none;
+        margin: 20px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+      .btnsound:hover {
+        transform: scale(1.1);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+      }
+  </style>
+
+
   <script src="{{ url_for('static', filename='socket.io.js') }}" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"> </script>
 
@@ -366,6 +392,53 @@
     var value = digit1*60*10+digit2*60+digit3*10+digit4;
     return value;
   }
+
+  function toggleClockMode()
+  {
+      console.log("toggleClockMode");
+
+    /* either regular or periodic where
+       we can periodically flash the score if the scoreboard is folder down */
+    var clockmodediv = document.getElementById("clockmode");
+    var clockmode = getComputedStyle(clockmodediv).getPropertyValue('--clockmode');
+    if (clockmode == 1)
+    {
+      clockmodediv.style.setProperty('--clockmode', 0);
+    } else {
+      clockmodediv.style.setProperty('--clockmode', 1);
+    }
+    var clockmode = getComputedStyle(clockmodediv).getPropertyValue('--clockmode');
+
+    if (clockmode == 1)
+    {
+      console.log("clockmode periodic");
+      clockmodediv.style.backgroundColor = "green";
+      clockmodediv.innerHTML = "cm=periodic"
+    } else {
+      console.log("clockmode default");
+      clockmodediv.style.backgroundColor = "#3498db";
+      clockmodediv.innerHTML = "cm=default";
+    }
+
+    $.getJSON('/toggleclockmode?clockmode='+clockmode, {},
+    function(data) {
+       // server Response
+       console.log(data);
+       /* TODO: do we only want to control button if server responds success? */
+    });
+  }
+
+  function playSound(value)
+  {
+      /* will play sound */
+    $.getJSON('/playsound?value='+value, {},
+    function(data) {
+       // server Response
+       console.log(data);
+       /* TODO: do we only want to control button if server responds success? */
+    });
+  }
+
   </script>
 
   </head>
@@ -413,5 +486,32 @@
     {% endif %}
   </div>
 
+ 
+  <div>
+    {% if mode == "controller" %}
+    <div class="btnsound" id="clockmode" onClick="toggleClockMode();"> clock mode </div>
+    <div class="btnsound" width=100 onClick="playSound('boom-4.mp3');"> boom-4 </div>
+    <div class="btnsound" width=100 onClick="playSound('bullseye.mp3');"> bullseye </div>
+    <div class="btnsound" width=100 onClick="playSound('embarassing.mp3');"> embarassing </div>
+    <div class="btnsound" width=100 onClick="playSound('empty.mp3');"> empty </div>
+    <div class="btnsound" width=100 onClick="playSound('get-out.mp3');"> get-out </div>
+    <div class="btnsound" width=100 onClick="playSound('heating-up.mp3');"> heating-up </div>
+    <div class="btnsound" width=100 onClick="playSound('hole.mp3');"> hole </div>
+    <div class="btnsound" width=100 onClick="playSound('kaboom-5.mp3');"> kaboom-5 </div>
+    <div class="btnsound" width=100 onClick="playSound('long-range.mp3');"> long-range </div>
+    <div class="btnsound" width=100 onClick="playSound('love-it.mp3');"> love-it </div>
+    <div class="btnsound" width=100 onClick="playSound('no-good.mp3');"> no-good </div>
+    <div class="btnsound" width=100 onClick="playSound('no-mans-land.mp3');"> no-mans-land </div>
+    <div class="btnsound" width=100 onClick="playSound('not-close.mp3');"> not-close </div>
+    <div class="btnsound" width=100 onClick="playSound('on-fire.mp3');"> on-fire </div>
+    <div class="btnsound" width=100 onClick="playSound('ouch.mp3');"> ouch </div>
+    <div class="btnsound" width=100 onClick="playSound('party.mp3');"> party </div>
+    <div class="btnsound" width=100 onClick="playSound('rejected.mp3');"> rejected </div>
+    <div class="btnsound" width=100 onClick="playSound('too-easy.mp3');"> too-easy </div>
+    <div class="btnsound" width=100 onClick="playSound('ut-oh.mp3');"> ut-oh </div>
+    <div class="btnsound" width=100 onClick="playSound('wild-shot.mp3');"> wild-shot </div>
+    <div class="btnsound" width=100 onClick="playSound('yes.mp3');"> yes </div>
+    {% endif %}
+  </div>
   </body>
 </html>
