@@ -22,7 +22,7 @@ homescore = 0
 awayscore = 0
 clock = 8*60
 paused = 1
-clockmode = 0 # 0 = default, 1 = periodic
+clockmode = 0 # 0 = default, 1 = periodic, 2=clock only
 consecutive_pts_home = 0
 consecutive_pts_away = 0
 
@@ -193,6 +193,10 @@ def toggleclockmode():
     if request.method == 'GET':
         if int(request.args.get('clockmode')) == 1:
             clockmode = 1
+            digit.set(0, "    ") # turn off top row
+        elif int(request.args.get('clockmode')) == 2:
+            clockmode = 2
+            digit.set(0, "    ") # turn off top row
         else:
             clockmode = 0
     else:
@@ -246,7 +250,7 @@ def setClock():
     # replace leading zero with space (easier to read)
     clockstr = replace_leading_zero(clockstr)
     #log.debug(clockstr)
-    if (clockmode == 1):
+    if (clockmode != 0):
         digit.set(4, clockstr)
     else:
         digit.set(0, clockstr)

@@ -406,6 +406,8 @@
     var clockmode = getComputedStyle(clockmodediv).getPropertyValue('--clockmode');
     if (clockmode == 1)
     {
+      clockmodediv.style.setProperty('--clockmode', 2);
+    } else if (clockmode == 2) {
       clockmodediv.style.setProperty('--clockmode', 0);
     } else {
       clockmodediv.style.setProperty('--clockmode', 1);
@@ -417,6 +419,10 @@
       console.log("clockmode periodic");
       clockmodediv.style.backgroundColor = "green";
       clockmodediv.innerHTML = "cm=periodic"
+    } else if (clockmode == 2) {
+      console.log("clockmode clock only");
+      clockmodediv.style.backgroundColor = "green";
+      clockmodediv.innerHTML = "cm=clock_only"
     } else {
       console.log("clockmode default");
       clockmodediv.style.backgroundColor = "#3498db";
