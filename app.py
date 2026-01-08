@@ -22,7 +22,10 @@ homescore = 0
 awayscore = 0
 clock = 8*60
 paused = 1
-clockmode = 0 # 0 = default, 1 = periodic, 2=clock only
+CLOCKMODE_DEFAULT = 0
+CLOCKMODE_PERIODIC = 1
+CLOCKMODE_CLOCKONLY = 2
+clockmode = 0
 consecutive_pts_home = 0
 consecutive_pts_away = 0
 
@@ -191,19 +194,20 @@ def pauseResume():
 def toggleclockmode():
     global clockmode
     if request.method == 'GET':
-        if int(request.args.get('clockmode')) == 1:
-            clockmode = 1
+        if int(request.args.get('clockmode')) == CLOCKMODE_PERIODIC:
+            clockmode = CLOCKMODE_PERIODIC
             digit.set(0, "    ") # turn off top row
-        elif int(request.args.get('clockmode')) == 2:
-            clockmode = 2
+            setScore()
+        elif int(request.args.get('clockmode')) == CLOCKMODE_CLOCKONLY:
+            clockmode = CLOCKMODE_CLOCKONLY
             digit.set(0, "    ") # turn off top row
+            setClock()
         else:
-            clockmode = 0
+            clockmode = CLOCKMODE_DEFAULT
+            setClock()
+            setScore()
     else:
         log.debug("clockmode ERR")
-
-    # display score (fixes race condition when turning off periodic)
-    setScore()
 
     # emit pause state to other clients
     socketio.emit('data', getData(), namespace='/status', broadcast=True)
@@ -250,7 +254,7 @@ def setClock():
     # replace leading zero with space (easier to read)
     clockstr = replace_leading_zero(clockstr)
     #log.debug(clockstr)
-    if (clockmode != 0):
+    if (clockmode != CLOCKMODE_DEFAULT):
         digit.set(4, clockstr)
     else:
         digit.set(0, clockstr)
@@ -262,7 +266,10 @@ def loop(socketio):
         time.sleep(1)
         if paused:
             # pause with score
-            setScore()
+            if (clockmode == CLOCKMODE_CLOCKONLY):
+                setClock() 
+            else:
+                setScore()
             continue
 
         # to test crash recovery
@@ -280,15 +287,15 @@ def loop(socketio):
             elif clock < 10:
                 pygame.mixer.Sound("/home/pi/scoreboard/beep2.wav").play()
 
-            #every 10 seconds flash the score in red/blue
-            if (clockmode == 1 and (clock % 5) == 0 or score_just_changed):
+            #every 5 seconds flash the score in red/blue
+            if (clockmode == CLOCKMODE_PERIODIC  and ((clock % 5) == 0 or score_just_changed)):
                 score_just_changed = False
                 setScore()
             else:
                 setClock()
-        else:
-            if (clockmode == 1):
-                # end with score
+
+            # end with score when clock hits zero
+            if (clock <= 0 and clockmode == CLOCKMODE_PERIODIC):
                 setScore()
 
 
