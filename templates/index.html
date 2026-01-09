@@ -127,44 +127,190 @@
       }
   </style>
 
+  <style>
+    #netBanner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+
+      font-family: 'Rubik Mono One', sans-serif;
+      font-size: 18px;
+      line-height: 1.2;
+
+      padding: 14px 18px;
+      text-align: center;
+
+      background: #222;
+      color: #fff;
+
+      transform: translateY(-120%);
+      transition: transform 180ms ease-in-out, opacity 180ms ease-in-out;
+      opacity: 0.98;
+    }
+
+    #netBanner.show {
+      transform: translateY(0);
+    }
+
+    #netBanner.ok {
+      background: #1f7a1f;
+    }
+
+    #netBanner.warn {
+      background: #b07a00;
+    }
+
+    #netBanner.bad {
+      background: #a11f1f;
+    }
+
+    /* Keep your layout from being covered by the banner */
+    body.hasBanner {
+      padding-top: 56px;
+    }
+
+    #netBanner small {
+      display: block;
+      margin-top: 6px;
+      font-family: sans-serif;
+      opacity: 0.9;
+    }
+  </style>
 
   <script src="{{ url_for('static', filename='socket.io.js') }}" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"> </script>
 
   <script>
+    function setBanner(state, mainText, subText, sticky)
+    {
+      const banner = document.getElementById("netBanner");
+      const sub = document.getElementById("netBannerSub");
+
+      banner.classList.remove("ok", "warn", "bad");
+      banner.classList.add(state);
+
+      banner.innerHTML = `${mainText}<small id="netBannerSub"></small>`;
+      const newSub = document.getElementById("netBannerSub");
+      if (newSub && subText)
+      {
+        newSub.textContent = subText;
+      }
+
+      document.body.classList.add("hasBanner");
+      banner.classList.add("show");
+
+      /* auto-hide when ok unless sticky=true */
+      if (state === "ok" && !sticky)
+      {
+        window.clearTimeout(window.__bannerHideTimer);
+        window.__bannerHideTimer = window.setTimeout(() => {
+          banner.classList.remove("show");
+          document.body.classList.remove("hasBanner");
+        }, 1200);
+      }
+    }
+
+    function formatAgo(ms)
+    {
+      if (ms < 1000) return "just now";
+      const s = Math.floor(ms / 1000);
+      if (s < 60) return `${s}s ago`;
+      const m = Math.floor(s / 60);
+      return `${m}m ${s % 60}s ago`;
+    }
+
     // socket IO client side
-    function ready() {
+    function ready()
+    {
       var url = "{{http}}" + document.domain + ':' + location.port + '/status';
       console.log(url);
       setClockValue(55*60+50+5); /* 55:55 */
-      var socket = io.connect(url);
+
+      let lastRxTs = 0;
+      let healthTimer = null;
+
+      setBanner("warn", "Connecting…", "Opening socket", true);
+
+      var socket = io.connect(url, {
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 500,
+        reconnectionDelayMax: 3000,
+        timeout: 20000
+      });
+
+      function markRx()
+      {
+        lastRxTs = Date.now();
+      }
+
+      function startHealthCheck()
+      {
+        if (healthTimer) return;
+
+        healthTimer = window.setInterval(() => {
+          if (!lastRxTs) return;
+
+          const ageMs = Date.now() - lastRxTs;
+
+          /* If we haven't received anything in a while, surface it */
+          if (ageMs > 15000)
+          {
+            setBanner("warn", "Connected (stale)", `No updates for ${formatAgo(ageMs)}`, true);
+          }
+        }, 2000);
+      }
+
       socket.on('connect', () => {
         console.log("connected");
         console.log(socket.id);
-      }) // end socket.on
+        markRx();
+        setBanner("ok", "Connected", "Live updates active", false);
+        startHealthCheck();
+      });
 
       socket.on('data', function(json) {
-        console.log("data: " + json.data.home)
+        markRx();
         updateData(json);
       });
+
       socket.on('clock', function(json) {
-        console.log("clock: " + json.data.home)
+        markRx();
         updateClock(json);
       });
 
-      socket.on('connect_error', error => {
-        console.error('Connection failed:', error);
+      socket.on('reconnect_attempt', (attempt) => {
+        setBanner("warn", "Reconnecting…", `Attempt ${attempt}`, true);
       });
-      socket.on('error', error => {
+
+      socket.on('reconnect_error', (error) => {
+        console.error('Reconnect error:', error);
+        setBanner("warn", "Reconnecting…", "Waiting for server", true);
+      });
+
+      socket.on('connect_error', (error) => {
         console.error('Connection failed:', error);
-      }); 
-      socket.on('disconnect', () => {
-        console.error('Connection disconnected:');
-        {% if mode == "controller" %}
-          alert("Server is down");
-        {% endif %}   
+        setBanner("bad", "Disconnected", "Socket connect failed", true);
+      });
+
+      socket.on('error', (error) => {
+        console.error('Socket error:', error);
+        setBanner("bad", "Disconnected", "Socket error", true);
+      });
+
+      socket.on('disconnect', (reason) => {
+        console.error('Connection disconnected:', reason);
+        setBanner("bad", "Disconnected", `Reason: ${reason || "unknown"}`, true);
       });
     }
+
+
+
+
+
+
     document.addEventListener("DOMContentLoaded", ready);
 
     function updateData(json)
@@ -202,10 +348,10 @@
 
   function adjustScore(diff, team)
   {
-    $.getJSON('/adjustScore?diff='+diff+'&team='+team, {},
-    function(data) {
-       // server Response
-    });
+    $.getJSON('/adjustScore?diff='+diff+'&team='+team, {})
+      .fail(function() {
+        setBanner("bad", "Disconnected", "HTTP request failed (adjustScore)", true);
+      });
   }
   function adjustClockOnServer(value)
   {
@@ -452,7 +598,10 @@
 
   </head>
   <body>
-
+  <div id="netBanner" class="show warn">
+    Connecting…
+    <small id="netBannerSub">Starting up</small>
+  </div>
   <div class="container">
     <div>
       <div class="name">Home</div>

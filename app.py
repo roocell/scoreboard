@@ -170,9 +170,7 @@ def adjustScore():
     # change to string and replace leading 0 with space
     score_just_changed = True
     setScore()
-    
-
-    return "OK"
+    return jsonify(ok=True)
 
 @app.route('/pauseResume', methods = ['POST', 'GET'])
 def pauseResume():
