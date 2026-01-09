@@ -18,6 +18,7 @@
 
     body {
       background-color: #000000;
+      margin: 0;
       {% if mode == "controller" %}
         overflow: scroll;
       {% else %}
@@ -34,11 +35,34 @@
       }
     }
 
-    .container {
+    .scoreboardTop {
       display: flex;
       flex-direction: row;
+      flex-wrap: nowrap;
       justify-content: space-between;
       align-items: center;
+      gap: 48px;
+      padding: 0px 0px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .teamRow {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .scoreGrid {
+      width: 100%;
+      max-width: 280px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(90px, 1fr));
+      gap: 10px;
     }
 
     .number {
@@ -46,18 +70,14 @@
       font-family: 'Rubik Mono One', sans-serif;
       color: #FFFFFF;
       text-align: center;
-      {% if mode == "controller" %}
-        font-size: 10em;
-      {% else %}
-        font-size: 20em;
-      {% endif %}
+      font-size: clamp(48px, 12vw, 10em);
     }
 
     .name {
       font-family: 'Rubik Mono One', sans-serif;
       color: #d7d7d7;
-      font-size: 5em;
-      margin: 0 50px;
+      font-size: 3em;
+      margin: 0;
       text-align: center;
     }
 
@@ -75,24 +95,43 @@
     .clockdigit {
       letter-spacing: -1em;
     }
+
+    .lowerSection {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 16px 24px 16px;
+      box-sizing: border-box;
+    }
+
+    .clockBlock {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
   </style>
 
   <style>
     .btn {
       --paused: 1; /* custom CSS property */
       font-family: 'Rubik Mono One', sans-serif;
-      display: inline-block;
+      display: flex;
       align-items: center;
-      width: 100px;
-      height: 100px;
-      line-height: 100px;
+      justify-content: center;
+      width: 100%;
+      height: 64px;
+      line-height: 1;
       background-color: #3498db;
       color: #fff;
       text-align: center;
       border-radius: 10px;
       font-size: 24px;
       text-decoration: none;
-      margin: 20px;
+      margin: 0;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
     }
@@ -101,31 +140,71 @@
       transform: scale(1.1);
       box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
     }
+
+    .scoreGrid .btn {
+      height: 72px;
+      font-size: 26px;
+    }
+
+    .clockControlsRow {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .clockControlsRow .btn {
+      height: clamp(44px, 10vw, 72px);
+      font-size: clamp(16px, 3.8vw, 22px);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .scoreGrid {
+        grid-template-columns: repeat(2, minmax(90px, 1fr));
+      }
+
+      .clockControlsRow {
+        gap: 6px;
+      }
+    }
+
   </style>
 
   <style>
     .btnsound {
       --clockmode: 0; /* custom CSS property */
       font-family: 'Rubik Mono One', sans-serif;
-      display: inline-block;
+      display: flex;
       align-items: center;
-      width: 400px;
-      height: 100px;
-      line-height: 100px;
+      justify-content: center;
+      width: 100%;
+      height: 72px;
+      line-height: 1;
       background-color: #3498db;
       color: #fff;
       text-align: center;
       border-radius: 10px;
-      font-size: 24px;
+      font-size: 22px;
       text-decoration: none;
-      margin: 20px;
+      margin: 0;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
+      box-sizing: border-box;
     }
 
     .btnsound:hover {
       transform: scale(1.1);
       box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .soundBlock {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: stretch;
+      gap: 8px;
+      margin-top: 12px;
     }
   </style>
 
@@ -818,98 +897,105 @@
     <small id="netBannerSub">Starting up</small>
   </div>
 
-  <div class="container">
-    <div>
+  <div class="scoreboardTop">
+    <div class="teamRow">
       <div class="name">Home</div>
       <!-- this is called Jinja2 template syntax -->
       {% if mode == "controller" %}
-        <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'home');">-1</div>
-        <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'home');">+1</div>
-        <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'home');">+2</div>
-        <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'home');">+3</div>
+        <div class="scoreGrid">
+          <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'home');">-1</div>
+          <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'home');">+1</div>
+          <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'home');">+2</div>
+          <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'home');">+3</div>
+        </div>
       {% endif %}
       <div class="number" id="home" >XX</div>
     </div>
-    <div>
+    <div class="teamRow">
       <div class="name">Away</div>
       {% if mode == "controller" %}
-        <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'away');">-1</div>
-        <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'away');">+1</div>
-        <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'away');">+2</div>
-        <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'away');">+3</div>
+        <div class="scoreGrid">
+          <div class="btn" id="adjustScoreMinus1" onClick="adjustScore(-1, 'away');">-1</div>
+          <div class="btn" id="adjustScorePlus1" onClick="adjustScore(1, 'away');">+1</div>
+          <div class="btn" id="adjustScorePlus2" onClick="adjustScore(2, 'away');">+2</div>
+          <div class="btn" id="adjustScorePlus3" onClick="adjustScore(3, 'away');">+3</div>
+        </div>
       {% endif %}
       <div class="number" id="away" >XX</div>
     </div>
   </div>
 
-  <div>
-    <div class="clock" id="clock">
-      <span class="clockdigit" id="digit1">8</span>
-      <span class="clockdigit" id="digit2">8</span>
-      <span class="clockdigit">:</span>
-      <span class="clockdigit" id="digit3">8</span>
-      <span class="clockdigit" id="digit4">8</span>
-    </div>
-
-    {% if mode == "controller" %}
-      <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
-      <div class="btn" onClick="adjustClockDigit('left');"> < </div>
-      <div class="btn" onClick="adjustClockDigit('right');"> > </div>
-      <div class="btn" onClick="adjustClockValue(1);">&#9650;</div>
-      <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
-      <div class="btn" onClick="resetAll();">&#8634;</div>
-
-      <div class="configRow">
-        <label>
-          Reset clock:
-          <input
-            class="configInput"
-            id="resetClockValue"
-            type="tel"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            autocomplete="off"
-            placeholder="0800"
-            maxlength="5"
-          />
-        </label>
-        <span class="configHint"></span>
-
-        <label>
-          Reset scores
-          <input class="configCheckbox" id="resetScoresOnReset" type="checkbox" />
-        </label>
-        <span class="configHint"></span>
+  <div class="lowerSection">
+    <div class="clockBlock">
+      <div class="clock" id="clock">
+        <span class="clockdigit" id="digit1">8</span>
+        <span class="clockdigit" id="digit2">8</span>
+        <span class="clockdigit">:</span>
+        <span class="clockdigit" id="digit3">8</span>
+        <span class="clockdigit" id="digit4">8</span>
       </div>
 
-      {% endif %}
-  </div>
+      {% if mode == "controller" %}
+        <div class="clockControlsRow">
+          <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
+          <div class="btn" onClick="adjustClockDigit('left');"> < </div>
+          <div class="btn" onClick="adjustClockDigit('right');"> > </div>
+          <div class="btn" onClick="adjustClockValue(1);">&#9650;</div>
+          <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
+          <div class="btn" onClick="resetAll();">&#8634;</div>
+        </div>
 
-  <div>
-    {% if mode == "controller" %}
-    <div class="btnsound" id="clockmode" onClick="toggleClockMode();"> clock mode </div>
-    <div class="btnsound" width=100 onClick="playSound('boom-4.mp3');"> boom-4 </div>
-    <div class="btnsound" width=100 onClick="playSound('bullseye.mp3');"> bullseye </div>
-    <div class="btnsound" width=100 onClick="playSound('embarassing.mp3');"> embarassing </div>
-    <div class="btnsound" width=100 onClick="playSound('empty.mp3');"> empty </div>
-    <div class="btnsound" width=100 onClick="playSound('get-out.mp3');"> get-out </div>
-    <div class="btnsound" width=100 onClick="playSound('heating-up.mp3');"> heating-up </div>
-    <div class="btnsound" width=100 onClick="playSound('hole.mp3');"> hole </div>
-    <div class="btnsound" width=100 onClick="playSound('kaboom-5.mp3');"> kaboom-5 </div>
-    <div class="btnsound" width=100 onClick="playSound('long-range.mp3');"> long-range </div>
-    <div class="btnsound" width=100 onClick="playSound('love-it.mp3');"> love-it </div>
-    <div class="btnsound" width=100 onClick="playSound('no-good.mp3');"> no-good </div>
-    <div class="btnsound" width=100 onClick="playSound('no-mans-land.mp3');"> no-mans-land </div>
-    <div class="btnsound" width=100 onClick="playSound('not-close.mp3');"> not-close </div>
-    <div class="btnsound" width=100 onClick="playSound('on-fire.mp3');"> on-fire </div>
-    <div class="btnsound" width=100 onClick="playSound('ouch.mp3');"> ouch </div>
-    <div class="btnsound" width=100 onClick="playSound('party.mp3');"> party </div>
-    <div class="btnsound" width=100 onClick="playSound('rejected.mp3');"> rejected </div>
-    <div class="btnsound" width=100 onClick="playSound('too-easy.mp3');"> too-easy </div>
-    <div class="btnsound" width=100 onClick="playSound('ut-oh.mp3');"> ut-oh </div>
-    <div class="btnsound" width=100 onClick="playSound('wild-shot.mp3');"> wild-shot </div>
-    <div class="btnsound" width=100 onClick="playSound('yes.mp3');"> yes </div>
-    {% endif %}
+        <div class="configRow">
+          <label>
+            Reset clock:
+            <input
+              class="configInput"
+              id="resetClockValue"
+              type="tel"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              autocomplete="off"
+              placeholder="0800"
+              maxlength="5"
+            />
+          </label>
+          <span class="configHint"></span>
+
+          <label>
+            Reset scores
+            <input class="configCheckbox" id="resetScoresOnReset" type="checkbox" />
+          </label>
+          <span class="configHint"></span>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="soundBlock">
+      {% if mode == "controller" %}
+      <div class="btnsound" id="clockmode" onClick="toggleClockMode();"> clock mode </div>
+      <div class="btnsound" width=100 onClick="playSound('boom-4.mp3');"> boom-4 </div>
+      <div class="btnsound" width=100 onClick="playSound('bullseye.mp3');"> bullseye </div>
+      <div class="btnsound" width=100 onClick="playSound('embarassing.mp3');"> embarassing </div>
+      <div class="btnsound" width=100 onClick="playSound('empty.mp3');"> empty </div>
+      <div class="btnsound" width=100 onClick="playSound('get-out.mp3');"> get-out </div>
+      <div class="btnsound" width=100 onClick="playSound('heating-up.mp3');"> heating-up </div>
+      <div class="btnsound" width=100 onClick="playSound('hole.mp3');"> hole </div>
+      <div class="btnsound" width=100 onClick="playSound('kaboom-5.mp3');"> kaboom-5 </div>
+      <div class="btnsound" width=100 onClick="playSound('long-range.mp3');"> long-range </div>
+      <div class="btnsound" width=100 onClick="playSound('love-it.mp3');"> love-it </div>
+      <div class="btnsound" width=100 onClick="playSound('no-good.mp3');"> no-good </div>
+      <div class="btnsound" width=100 onClick="playSound('no-mans-land.mp3');"> no-mans-land </div>
+      <div class="btnsound" width=100 onClick="playSound('not-close.mp3');"> not-close </div>
+      <div class="btnsound" width=100 onClick="playSound('on-fire.mp3');"> on-fire </div>
+      <div class="btnsound" width=100 onClick="playSound('ouch.mp3');"> ouch </div>
+      <div class="btnsound" width=100 onClick="playSound('party.mp3');"> party </div>
+      <div class="btnsound" width=100 onClick="playSound('rejected.mp3');"> rejected </div>
+      <div class="btnsound" width=100 onClick="playSound('too-easy.mp3');"> too-easy </div>
+      <div class="btnsound" width=100 onClick="playSound('ut-oh.mp3');"> ut-oh </div>
+      <div class="btnsound" width=100 onClick="playSound('wild-shot.mp3');"> wild-shot </div>
+      <div class="btnsound" width=100 onClick="playSound('yes.mp3');"> yes </div>
+      {% endif %}
+    </div>
   </div>
   </body>
 </html>
