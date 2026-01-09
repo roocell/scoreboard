@@ -56,6 +56,7 @@ def getData():
             'home' : homescore,
             'away' : awayscore,
             'clock' : clock,
+            'clockmode' : clockmode,
             'paused' : paused,
         }
     }
@@ -236,7 +237,7 @@ def connect():
     log.debug("flask client connected")
     # always emit at connect so client can update
     socketio.emit('data', getData(), namespace='/status', broadcast=True)
-    socketio.emit('clock', getData(), namespace='/status', broadcast=True)
+    #socketio.emit('clock', getData(), namespace='/status', broadcast=True)
     return "OK"
 
 @socketio.on('disconnect', namespace='/status')

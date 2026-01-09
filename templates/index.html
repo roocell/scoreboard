@@ -328,6 +328,10 @@
         console.log("update from server " + json.data.paused + " " + paused);
         pauseDiv.style.setProperty('--paused', parseInt(json.data.paused));
         applyPause();
+
+        setClockValue(json.data.clock);
+        setClockModeValue(json.data.clockmode);
+
       {% else %}
         /* for scoreboard, if paused, make clock red */
         var clockDiv = document.getElementById('clock');
@@ -542,6 +546,28 @@
     return value;
   }
 
+  function setClockModeValue(value)
+  {
+    var clockmodediv = document.getElementById("clockmode");
+    clockmodediv.style.setProperty('--clockmode', value);
+
+    if (value == 1)
+    {
+      console.log("clockmode periodic");
+      clockmodediv.style.backgroundColor = "green";
+      clockmodediv.innerHTML = "cm=periodic"
+    } else if (value == 2) {
+      console.log("clockmode clock only");
+      clockmodediv.style.backgroundColor = "green";
+      clockmodediv.innerHTML = "cm=clock_only"
+    } else {
+      console.log("clockmode default");
+      clockmodediv.style.backgroundColor = "#3498db";
+      clockmodediv.innerHTML = "cm=default";
+    }
+
+  }
+
   function toggleClockMode()
   {
       console.log("toggleClockMode");
@@ -552,29 +578,13 @@
     var clockmode = getComputedStyle(clockmodediv).getPropertyValue('--clockmode');
     if (clockmode == 1)
     {
-      clockmodediv.style.setProperty('--clockmode', 2);
+      clockmode=2;
     } else if (clockmode == 2) {
-      clockmodediv.style.setProperty('--clockmode', 0);
+      clockmode=0;
     } else {
-      clockmodediv.style.setProperty('--clockmode', 1);
+      clockmode=1;
     }
-    var clockmode = getComputedStyle(clockmodediv).getPropertyValue('--clockmode');
-
-    if (clockmode == 1)
-    {
-      console.log("clockmode periodic");
-      clockmodediv.style.backgroundColor = "green";
-      clockmodediv.innerHTML = "cm=periodic"
-    } else if (clockmode == 2) {
-      console.log("clockmode clock only");
-      clockmodediv.style.backgroundColor = "green";
-      clockmodediv.innerHTML = "cm=clock_only"
-    } else {
-      console.log("clockmode default");
-      clockmodediv.style.backgroundColor = "#3498db";
-      clockmodediv.innerHTML = "cm=default";
-    }
-
+    setClockModeValue(clockmode);
     $.getJSON('/toggleclockmode?clockmode='+clockmode, {},
     function(data) {
        // server Response
