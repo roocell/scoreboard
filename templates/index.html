@@ -22,7 +22,7 @@
         overflow: scroll;
       {% else %}
         overflow: hidden;
-      {% endif %} 
+      {% endif %}
     }
 
     @media (orientation: landscape) {
@@ -30,18 +30,18 @@
         {% if mode == "controller" %}
           width: 1280px;
           height: 1000px;
-        {% endif %} 
+        {% endif %}
       }
     }
 
-  .container {
+    .container {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-  }
+    }
 
-  .number {
+    .number {
       /* font-family: 'Bangers', cursive; */
       font-family: 'Rubik Mono One', sans-serif;
       color: #FFFFFF;
@@ -50,18 +50,18 @@
         font-size: 10em;
       {% else %}
         font-size: 20em;
-      {% endif %}      
-  }
+      {% endif %}
+    }
 
-  .name {
+    .name {
       font-family: 'Rubik Mono One', sans-serif;
       color: #d7d7d7;
       font-size: 5em;
       margin: 0 50px;
       text-align: center;
-  }
+    }
 
-  .clock {
+    .clock {
       font-family: 'Rubik Mono One', sans-serif;
       color: #FFFFFF;
       text-align: center;
@@ -69,62 +69,64 @@
         font-size: 5em;
       {% else %}
         font-size: 10em;
-      {% endif %}            
-  }
-  .clockdigit {
-    letter-spacing: -1em;
-  }
+      {% endif %}
+    }
 
+    .clockdigit {
+      letter-spacing: -1em;
+    }
   </style>
 
   <style>
-      .btn {
-        --paused: 1; /* custom CSS property */
-        font-family: 'Rubik Mono One', sans-serif;
-        display: inline-block;
-        align-items: center;
-        width: 100px;
-        height: 100px;
-        line-height: 100px;
-        background-color: #3498db;
-        color: #fff;
-        text-align: center;
-        border-radius: 10px;
-        font-size: 24px;
-        text-decoration: none;
-        margin: 20px;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
-      }
-      .btn:hover {
-        transform: scale(1.1);
-        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
-      }
+    .btn {
+      --paused: 1; /* custom CSS property */
+      font-family: 'Rubik Mono One', sans-serif;
+      display: inline-block;
+      align-items: center;
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      background-color: #3498db;
+      color: #fff;
+      text-align: center;
+      border-radius: 10px;
+      font-size: 24px;
+      text-decoration: none;
+      margin: 20px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.1);
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    }
   </style>
 
   <style>
-      .btnsound {
-        --clockmode: 0; /* custom CSS property */
-        font-family: 'Rubik Mono One', sans-serif;
-        display: inline-block;
-        align-items: center;
-        width: 400px;
-        height: 100px;
-        line-height: 100px;
-        background-color: #3498db;
-        color: #fff;
-        text-align: center;
-        border-radius: 10px;
-        font-size: 24px;
-        text-decoration: none;
-        margin: 20px;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
-      }
-      .btnsound:hover {
-        transform: scale(1.1);
-        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
-      }
+    .btnsound {
+      --clockmode: 0; /* custom CSS property */
+      font-family: 'Rubik Mono One', sans-serif;
+      display: inline-block;
+      align-items: center;
+      width: 400px;
+      height: 100px;
+      line-height: 100px;
+      background-color: #3498db;
+      color: #fff;
+      text-align: center;
+      border-radius: 10px;
+      font-size: 24px;
+      text-decoration: none;
+      margin: 20px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btnsound:hover {
+      transform: scale(1.1);
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    }
   </style>
 
   <style>
@@ -179,6 +181,50 @@
     }
   </style>
 
+  <!-- NEW: controller config row -->
+  <style>
+    .configRow {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin: 10px 20px 0 20px;
+      color: #fff;
+      font-family: 'Rubik Mono One', sans-serif;
+      font-size: 18px;
+    }
+
+    .configRow label {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .configInput {
+      width: 160px;
+      height: 56px;
+      font-size: 24px;
+      border-radius: 10px;
+      border: 2px solid #333;
+      padding: 0 12px;
+      outline: none;
+      text-align: center;
+    }
+
+    .configCheckbox {
+      transform: scale(1.6);
+      margin-left: 6px;
+    }
+
+    .configHint {
+      font-family: sans-serif;
+      opacity: 0.85;
+      font-size: 14px;
+    }
+  </style>
+
   <script src="{{ url_for('static', filename='socket.io.js') }}" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"> </script>
 
@@ -221,11 +267,162 @@
       return `${m}m ${s % 60}s ago`;
     }
 
+    /* NEW: reset config storage */
+    const RESET_CLOCK_KEY = "scoreboard.resetClockValue";          /* string like "08:00" */
+    const RESET_SCORES_KEY = "scoreboard.resetScoresOnReset";      /* "true" / "false" */
+
+    function formatDigitsAsClock(digits)
+    {
+      const d = String(digits || "").replace(/\D/g, "").slice(0, 4);
+
+      if (d.length <= 2)
+      {
+        return d; /* "08" while typing */
+      }
+
+      return d.slice(0, 2) + ":" + d.slice(2); /* "08:0" / "08:00" */
+    }
+
+    function coerceDigitsTo4(digits)
+    {
+      const d = String(digits || "").replace(/\D/g, "").slice(0, 4);
+
+      if (d.length === 0) return "0800";            /* default */
+      if (d.length === 1) return "0" + d + "00";    /* 8 -> 08:00 */
+      if (d.length === 2) return d + "00";          /* 08 -> 08:00 */
+      if (d.length === 3) return "0" + d;           /* 800 -> 08:00 */
+      return d;                                     /* 4 digits */
+    }
+
+    function normalizeResetClockInput(el, finalize)
+    {
+      const digits = String(el.value || "").replace(/\D/g, "").slice(0, 4);
+
+      if (!finalize)
+      {
+        el.value = formatDigitsAsClock(digits);
+        return;
+      }
+
+      const d4 = coerceDigitsTo4(digits);
+      let mm = parseInt(d4.slice(0, 2), 10);
+      let ss = parseInt(d4.slice(2, 4), 10);
+
+      if (isNaN(mm)) mm = 0;
+      if (isNaN(ss)) ss = 0;
+
+      /* clamp */
+      if (mm < 0) mm = 0;
+      if (mm > 99) mm = 99;
+
+      if (ss < 0) ss = 0;
+      if (ss > 59) ss = 59;
+
+      const mmStr = String(mm).padStart(2, "0");
+      const ssStr = String(ss).padStart(2, "0");
+
+      el.value = mmStr + ":" + ssStr;
+    }
+
+    function loadResetConfig()
+    {
+      {% if mode == "controller" %}
+        const clockInput = document.getElementById("resetClockValue");
+        const scoresCheckbox = document.getElementById("resetScoresOnReset");
+
+        if (clockInput)
+        {
+          const savedClock = window.localStorage.getItem(RESET_CLOCK_KEY);
+          clockInput.value = (savedClock && savedClock.trim().length > 0) ? savedClock : "08:00";
+
+          /* auto-colon while typing */
+          clockInput.addEventListener("input", () => {
+            normalizeResetClockInput(clockInput, false);
+          });
+
+          /* finalize on blur/change, then persist */
+          clockInput.addEventListener("blur", () => {
+            normalizeResetClockInput(clockInput, true);
+            window.localStorage.setItem(RESET_CLOCK_KEY, clockInput.value.trim());
+          });
+
+          clockInput.addEventListener("change", () => {
+            normalizeResetClockInput(clockInput, true);
+            window.localStorage.setItem(RESET_CLOCK_KEY, clockInput.value.trim());
+          });
+
+          /* ensure it starts normalized */
+          normalizeResetClockInput(clockInput, true);
+        }
+
+        if (scoresCheckbox)
+        {
+          const savedScores = window.localStorage.getItem(RESET_SCORES_KEY);
+          scoresCheckbox.checked = (savedScores === "true");
+
+          scoresCheckbox.addEventListener("change", () => {
+            window.localStorage.setItem(RESET_SCORES_KEY, scoresCheckbox.checked ? "true" : "false");
+          });
+        }
+      {% endif %}
+    }
+
+    function parseResetClockToSeconds(text)
+    {
+      if (!text) return 8 * 60;
+
+      const s = String(text).trim();
+
+      let mm = 0;
+      let ss = 0;
+
+      if (s.includes(":"))
+      {
+        const parts = s.split(":");
+        mm = parseInt(parts[0] || "0", 10);
+        ss = parseInt(parts[1] || "0", 10);
+      }
+      else
+      {
+        const digits = s.replace(/\D/g, "").slice(0, 4);
+        const d4 = coerceDigitsTo4(digits);
+        mm = parseInt(d4.slice(0, 2), 10);
+        ss = parseInt(d4.slice(2, 4), 10);
+      }
+
+      if (isNaN(mm)) mm = 0;
+      if (isNaN(ss)) ss = 0;
+
+      /* clamp */
+      if (mm < 0) mm = 0;
+      if (mm > 99) mm = 99;
+
+      if (ss < 0) ss = 0;
+      if (ss > 59) ss = 59;
+
+      return (mm * 60) + ss;
+    }
+
+    function getResetClockSeconds()
+    {
+      {% if mode == "controller" %}
+        const clockInput = document.getElementById("resetClockValue");
+        if (!clockInput) return 8 * 60;
+
+        return parseResetClockToSeconds(clockInput.value);
+      {% else %}
+        return 8 * 60;
+      {% endif %}
+    }
+
     // socket IO client side
     function ready()
     {
       var url = "{{http}}" + document.domain + ':' + location.port + '/status';
       console.log(url);
+
+      loadResetConfig();
+
       setClockValue(55*60+50+5); /* 55:55 */
 
       let lastRxTs = 0;
@@ -306,11 +503,6 @@
       });
     }
 
-
-
-
-
-
     document.addEventListener("DOMContentLoaded", ready);
 
     function updateData(json)
@@ -341,269 +533,282 @@
         } else {
           clockDiv.style.color = "white";
         }
-      {% endif %}   
-  }
-  function updateClock(json)
-  {
+      {% endif %}
+    }
+
+    function updateClock(json)
+    {
       /* send clock separately to overcome race condition
          with pause/resume */
       setClockValue(json.data.clock);
-  }
+    }
 
-  function adjustScore(diff, team)
-  {
-    $.getJSON('/adjustScore?diff='+diff+'&team='+team, {})
-      .fail(function() {
-        setBanner("bad", "Disconnected", "HTTP request failed (adjustScore)", true);
+    function adjustScore(diff, team)
+    {
+      $.getJSON('/adjustScore?diff='+diff+'&team='+team, {})
+        .fail(function() {
+          setBanner("bad", "Disconnected", "HTTP request failed (adjustScore)", true);
+        });
+    }
+
+    function adjustClockOnServer(value)
+    {
+      $.getJSON('/adjustClock?value='+value, {},
+      function(data) {
+        // server Response
       });
-  }
-  function adjustClockOnServer(value)
-  {
-    $.getJSON('/adjustClock?value='+value, {},
-    function(data) {
-       // server Response
-    });
-  }
-  function applyPause()
-  {
-    var pauseDiv = document.getElementById("pause");
-    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
-    if (paused == 1)
-    {
-      console.log(paused + " pausing");
-      pauseDiv.style.backgroundColor = "green";
-      pauseDiv.innerHTML = "&#9658;"
-      highlightClockDigit(1);
-    } else {
-      console.log(paused + " resuming");
-      pauseDiv.style.backgroundColor = "#3498db";
-      pauseDiv.innerHTML = "||";
-      clearClockDigitHighlight();
     }
-  }
-  function togglePause()
-  {
-    var pauseDiv = document.getElementById("pause");
-    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
-    if (paused == 1)
+
+    function applyPause()
     {
-      pauseDiv.style.setProperty('--paused', 0);
-    } else {
-      pauseDiv.style.setProperty('--paused', 1);
-    }
-    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
-    applyPause()
-    $.getJSON('/pauseResume?paused='+paused, {},
-    function(data) {
-       // server Response
-       console.log(data);
-       /* TODO: do we only want to control button if server responds success? */
-    });
-  }
-  function adjustClockValue(value)
-  {
-    var currentClockDigit = findHighlightedClockDigit();
-
-    /* only do this if we're paused */
-    var pauseDiv = document.getElementById('pause');
-    var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
-    if (paused ==  "false") return;
-
-    /* figure out which digit is highlighted */
-    var digitSpan = document.getElementById("digit" + currentClockDigit);
-    var newValue = parseInt(digitSpan.innerHTML) + parseInt(value);
-    var maxValue = 6;
-
-    /* digit 1/3 can only go up to 6 */
-    /* digit 2/4 can go up to 9 */
-    if (currentClockDigit == 1 || currentClockDigit==3) maxValue = 6;
-    else if (currentClockDigit == 2 || currentClockDigit==4) maxValue = 9;
-    else console.log("ERROR");
-    if (newValue < 0) newValue = maxValue;
-    else if (newValue > maxValue) newValue = 0;
-    digitSpan.innerHTML = newValue;
-   
-    /* send clock value to python */
-    adjustClockOnServer(getClockValue());
-  }
-
-  let HIGHLIGHT_COLOR = "green"
-  function findHighlightedClockDigit()
-  {
-    var i;
-    var digitSpan;
-    for (i=1; i <=4; i++)
-    {
-      digitSpan = document.getElementById("digit" + i);
-      if (digitSpan.style.color == HIGHLIGHT_COLOR)
+      var pauseDiv = document.getElementById("pause");
+      var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+      if (paused == 1)
       {
-        return i;
+        console.log(paused + " pausing");
+        pauseDiv.style.backgroundColor = "green";
+        pauseDiv.innerHTML = "&#9658;"
+        highlightClockDigit(1);
+      } else {
+        console.log(paused + " resuming");
+        pauseDiv.style.backgroundColor = "#3498db";
+        pauseDiv.innerHTML = "||";
+        clearClockDigitHighlight();
       }
     }
-  }
 
-  let mySpan = document.getElementById("digit1");
-
-  // This function will be called before the next repaint
-  function redraw() {
-    mySpan.style.display = "none";
-    mySpan.offsetHeight; // This triggers a redraw
-    mySpan.style.display = "inline-block";
-  }
-
-  function clearClockDigitHighlight(skip)
-  {
-    var i;
-    var digitSpan;
-    for (i=1; i<=4; i++)
+    function togglePause()
     {
-      if (i == skip) continue;
-      digitSpan = document.getElementById("digit" + i);
-      digitSpan.style.color = "white";
-    }
-  }
-
-  function highlightClockDigit(digit)
-  {
-    clearClockDigitHighlight(digit)
-    var digitSpan = document.getElementById("digit" + digit);
-    digitSpan.style.color = HIGHLIGHT_COLOR;
-    mySpan = digitSpan;
-    requestAnimationFrame(redraw);
-  }
-
-  function adjustClockDigit(direction)
-  {
-    var highlight = findHighlightedClockDigit();
-
-    /* highlight digit */
-    if (direction == "right")
-    {
-      if (highlight == 4)
+      var pauseDiv = document.getElementById("pause");
+      var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+      if (paused == 1)
       {
-        highlight = 1;
+        pauseDiv.style.setProperty('--paused', 0);
       } else {
-        highlight += 1;
+        pauseDiv.style.setProperty('--paused', 1);
       }
-    } else { /* left */
-      if (highlight == 1)
+      var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+      applyPause()
+      $.getJSON('/pauseResume?paused='+paused, {},
+      function(data) {
+        // server Response
+        console.log(data);
+        /* TODO: do we only want to control button if server responds success? */
+      });
+    }
+
+    function adjustClockValue(value)
+    {
+      var currentClockDigit = findHighlightedClockDigit();
+
+      /* only do this if we're paused */
+      var pauseDiv = document.getElementById('pause');
+      var paused = getComputedStyle(pauseDiv).getPropertyValue('--paused');
+      if (paused != "1") return;
+
+      /* figure out which digit is highlighted */
+      var digitSpan = document.getElementById("digit" + currentClockDigit);
+      var newValue = parseInt(digitSpan.innerHTML) + parseInt(value);
+      var maxValue = 6;
+
+      /* digit 1/3 can only go up to 6 */
+      /* digit 2/4 can go up to 9 */
+      if (currentClockDigit == 1 || currentClockDigit==3) maxValue = 6;
+      else if (currentClockDigit == 2 || currentClockDigit==4) maxValue = 9;
+      else console.log("ERROR");
+      if (newValue < 0) newValue = maxValue;
+      else if (newValue > maxValue) newValue = 0;
+      digitSpan.innerHTML = newValue;
+
+      /* send clock value to python */
+      adjustClockOnServer(getClockValue());
+    }
+
+    let HIGHLIGHT_COLOR = "green"
+    function findHighlightedClockDigit()
+    {
+      var i;
+      var digitSpan;
+      for (i=1; i <=4; i++)
       {
-        highlight = 4;
+        digitSpan = document.getElementById("digit" + i);
+        if (digitSpan.style.color == HIGHLIGHT_COLOR)
+        {
+          return i;
+        }
+      }
+    }
+
+    let mySpan = document.getElementById("digit1");
+
+    // This function will be called before the next repaint
+    function redraw()
+    {
+      mySpan.style.display = "none";
+      mySpan.offsetHeight; // This triggers a redraw
+      mySpan.style.display = "inline-block";
+    }
+
+    function clearClockDigitHighlight(skip)
+    {
+      var i;
+      var digitSpan;
+      for (i=1; i<=4; i++)
+      {
+        if (i == skip) continue;
+        digitSpan = document.getElementById("digit" + i);
+        digitSpan.style.color = "white";
+      }
+    }
+
+    function highlightClockDigit(digit)
+    {
+      clearClockDigitHighlight(digit)
+      var digitSpan = document.getElementById("digit" + digit);
+      digitSpan.style.color = HIGHLIGHT_COLOR;
+      mySpan = digitSpan;
+      requestAnimationFrame(redraw);
+    }
+
+    function adjustClockDigit(direction)
+    {
+      var highlight = findHighlightedClockDigit();
+
+      /* highlight digit */
+      if (direction == "right")
+      {
+        if (highlight == 4)
+        {
+          highlight = 1;
+        } else {
+          highlight += 1;
+        }
+      } else { /* left */
+        if (highlight == 1)
+        {
+          highlight = 4;
+        } else {
+          highlight -= 1;
+        }
+      }
+      highlightClockDigit(highlight);
+    }
+
+    function resetScores()
+    {
+      var homescore = parseInt(document.getElementById("home").innerHTML);
+      var awayscore = parseInt(document.getElementById("away").innerHTML);
+      adjustScore(-homescore, "home");
+      adjustScore(-awayscore, "away");
+    }
+
+    function resetClock()
+    {
+      const resetSeconds = getResetClockSeconds();
+      setClockValue(resetSeconds);
+      adjustClockOnServer(getClockValue());
+    }
+
+    function resetAll()
+    {
+      if (confirm("Confirm reset."))
+      {
+        resetClock();
+
+        {% if mode == "controller" %}
+          const scoresCheckbox = document.getElementById("resetScoresOnReset");
+          if (scoresCheckbox && scoresCheckbox.checked)
+          {
+            resetScores();
+          }
+        {% endif %}
+      }
+    }
+
+    function setClockValue(value)
+    {
+      /* setClock will not be called during pause/adjusting
+         so don't need to worry about highlighting here */
+      var minutes = parseInt(parseInt(value)/60);
+      var seconds = parseInt(value) - minutes*60;
+      var digit1 = document.getElementById("digit1");
+      var digit2 = document.getElementById("digit2");
+      var digit3 = document.getElementById("digit3");
+      var digit4 = document.getElementById("digit4");
+
+      digit1.innerHTML = parseInt(minutes/10);
+      digit2.innerHTML = parseInt(minutes%10);
+      digit3.innerHTML = parseInt(seconds/10);
+      digit4.innerHTML = parseInt(seconds%10);
+    }
+
+    function getClockValue()
+    {
+      /* return the value of the clocks in seconds */
+      var digit1 = parseInt(document.getElementById("digit1").innerHTML);
+      var digit2 = parseInt(document.getElementById("digit2").innerHTML);
+      var digit3 = parseInt(document.getElementById("digit3").innerHTML);
+      var digit4 = parseInt(document.getElementById("digit4").innerHTML);
+      var value = digit1*60*10+digit2*60+digit3*10+digit4;
+      return value;
+    }
+
+    function setClockModeValue(value)
+    {
+      var clockmodediv = document.getElementById("clockmode");
+      clockmodediv.style.setProperty('--clockmode', value);
+
+      if (value == 1)
+      {
+        console.log("clockmode periodic");
+        clockmodediv.style.backgroundColor = "green";
+        clockmodediv.innerHTML = "cm=periodic"
+      } else if (value == 2) {
+        console.log("clockmode clock only");
+        clockmodediv.style.backgroundColor = "green";
+        clockmodediv.innerHTML = "cm=clock_only"
       } else {
-        highlight -= 1;
-      }    
+        console.log("clockmode default");
+        clockmodediv.style.backgroundColor = "#3498db";
+        clockmodediv.innerHTML = "cm=default";
+      }
     }
-    highlightClockDigit(highlight);
-  }
 
-  function resetScores()
-  {
-    var homescore = parseInt(document.getElementById("home").innerHTML);
-    var awayscore = parseInt(document.getElementById("away").innerHTML);
-    adjustScore(-homescore, "home");
-    adjustScore(-awayscore, "away");
-  }
-
-  function resetClock()
-  {
-    setClockValue(600);
-    adjustClockOnServer(getClockValue());
-  }
-
-  function resetAll()
-  {
-    if (confirm("Confirm reset."))
+    function toggleClockMode()
     {
-      resetClock();
-      resetScores();
-    }
-  }
-
-  function setClockValue(value)
-  {
-    /* setClock will not be called during pause/adjusting
-       so don't need to worry about highlighting here */
-    var minutes = parseInt(parseInt(value)/60);
-    var seconds = parseInt(value) - minutes*60;
-    var digit1 = document.getElementById("digit1");
-    var digit2 = document.getElementById("digit2");
-    var digit3 = document.getElementById("digit3");
-    var digit4 = document.getElementById("digit4");
-
-    digit1.innerHTML = parseInt(minutes/10);
-    digit2.innerHTML = parseInt(minutes%10);
-    digit3.innerHTML = parseInt(seconds/10);
-    digit4.innerHTML = parseInt(seconds%10);
-  }
-  function getClockValue()
-  {
-    /* return the value of the clocks in seconds */
-    var digit1 = parseInt(document.getElementById("digit1").innerHTML);
-    var digit2 = parseInt(document.getElementById("digit2").innerHTML);
-    var digit3 = parseInt(document.getElementById("digit3").innerHTML);
-    var digit4 = parseInt(document.getElementById("digit4").innerHTML);
-    var value = digit1*60*10+digit2*60+digit3*10+digit4;
-    return value;
-  }
-
-  function setClockModeValue(value)
-  {
-    var clockmodediv = document.getElementById("clockmode");
-    clockmodediv.style.setProperty('--clockmode', value);
-
-    if (value == 1)
-    {
-      console.log("clockmode periodic");
-      clockmodediv.style.backgroundColor = "green";
-      clockmodediv.innerHTML = "cm=periodic"
-    } else if (value == 2) {
-      console.log("clockmode clock only");
-      clockmodediv.style.backgroundColor = "green";
-      clockmodediv.innerHTML = "cm=clock_only"
-    } else {
-      console.log("clockmode default");
-      clockmodediv.style.backgroundColor = "#3498db";
-      clockmodediv.innerHTML = "cm=default";
-    }
-
-  }
-
-  function toggleClockMode()
-  {
       console.log("toggleClockMode");
 
-    /* either regular or periodic where
-       we can periodically flash the score if the scoreboard is folder down */
-    var clockmodediv = document.getElementById("clockmode");
-    var clockmode = getComputedStyle(clockmodediv).getPropertyValue('--clockmode');
-    if (clockmode == 1)
-    {
-      clockmode=2;
-    } else if (clockmode == 2) {
-      clockmode=0;
-    } else {
-      clockmode=1;
+      /* either regular or periodic where
+         we can periodically flash the score if the scoreboard is folder down */
+      var clockmodediv = document.getElementById("clockmode");
+      var clockmode = getComputedStyle(clockmodediv).getPropertyValue('--clockmode');
+      if (clockmode == 1)
+      {
+        clockmode=2;
+      } else if (clockmode == 2) {
+        clockmode=0;
+      } else {
+        clockmode=1;
+      }
+      setClockModeValue(clockmode);
+      $.getJSON('/toggleclockmode?clockmode='+clockmode, {},
+      function(data) {
+        // server Response
+        console.log(data);
+        /* TODO: do we only want to control button if server responds success? */
+      });
     }
-    setClockModeValue(clockmode);
-    $.getJSON('/toggleclockmode?clockmode='+clockmode, {},
-    function(data) {
-       // server Response
-       console.log(data);
-       /* TODO: do we only want to control button if server responds success? */
-    });
-  }
 
-  function playSound(value)
-  {
+    function playSound(value)
+    {
       /* will play sound */
-    $.getJSON('/playsound?value='+value, {},
-    function(data) {
-       // server Response
-       console.log(data);
-       /* TODO: do we only want to control button if server responds success? */
-    });
-  }
-
+      $.getJSON('/playsound?value='+value, {},
+      function(data) {
+        // server Response
+        console.log(data);
+        /* TODO: do we only want to control button if server responds success? */
+      });
+    }
   </script>
 
   </head>
@@ -612,6 +817,7 @@
     Connecting…
     <small id="netBannerSub">Starting up</small>
   </div>
+
   <div class="container">
     <div>
       <div class="name">Home</div>
@@ -644,17 +850,41 @@
       <span class="clockdigit" id="digit3">8</span>
       <span class="clockdigit" id="digit4">8</span>
     </div>
+
     {% if mode == "controller" %}
-    <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
-    <div class="btn" onClick="adjustClockDigit('left');"> < </div>
-    <div class="btn" onClick="adjustClockDigit('right');"> > </div>
-    <div class="btn" onClick="adjustClockValue(1);">&#9650;</div>
-    <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
-    <div class="btn" onClick="resetAll();">&#8634;</div>
-    {% endif %}
+      <div class="btn" id="pause" onClick="togglePause();">&#9658;</div>
+      <div class="btn" onClick="adjustClockDigit('left');"> < </div>
+      <div class="btn" onClick="adjustClockDigit('right');"> > </div>
+      <div class="btn" onClick="adjustClockValue(1);">&#9650;</div>
+      <div class="btn" onClick="adjustClockValue(-1);">&#9660;</div>
+      <div class="btn" onClick="resetAll();">&#8634;</div>
+
+      <div class="configRow">
+        <label>
+          Reset clock:
+          <input
+            class="configInput"
+            id="resetClockValue"
+            type="tel"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            autocomplete="off"
+            placeholder="0800"
+            maxlength="5"
+          />
+        </label>
+        <span class="configHint"></span>
+
+        <label>
+          Reset scores
+          <input class="configCheckbox" id="resetScoresOnReset" type="checkbox" />
+        </label>
+        <span class="configHint"></span>
+      </div>
+
+      {% endif %}
   </div>
 
- 
   <div>
     {% if mode == "controller" %}
     <div class="btnsound" id="clockmode" onClick="toggleClockMode();"> clock mode </div>
