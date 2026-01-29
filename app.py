@@ -1,5 +1,14 @@
 #!/usr/bin/python3
 
+#http = "https://"
+http = "http://"
+async_mode='eventlet'
+if async_mode == 'eventlet':
+    # we want to use eventlet (otherwise https certfile doens't work on socketio)
+    # but we're using a python thread - so we have to monkeypatch
+    import eventlet
+    eventlet.monkey_patch()
+
 import os, time, sys, datetime
 from logger import log as log
 import atexit
@@ -106,14 +115,7 @@ threading.excepthook = handle_thread_exception
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
-#http = "https://"
-http = "http://"
-async_mode='eventlet'
-if async_mode == 'eventlet':
-    # we want to use eventlet (otherwise https certfile doens't work on socketio)
-    # but we're using a python thread - so we have to monkeypatch
-    import eventlet
-    eventlet.monkey_patch()
+
 socketio = SocketIO(app, async_mode=async_mode)
 
 def timeout():
@@ -159,7 +161,7 @@ def adjustScore():
         else:
             log.debug("adjustScore ERROR")
 
-        socketio.emit('data', getData(), namespace='/status', broadcast=True)
+        socketio.emit('data', getData(), namespace='/status', broadcast=False)
         if (consecutive_pts_home >= 3 or consecutive_pts_away >= 3):
             pygame.mixer.Sound("/home/pi/scoreboard/on-fire.wav").play()
             consecutive_pts_home = 0
@@ -186,7 +188,7 @@ def pauseResume():
     else:
         log.debug("pauseResume ERR")
     # emit pause state to other clients
-    socketio.emit('data', getData(), namespace='/status', broadcast=True)
+    socketio.emit('data', getData(), namespace='/status', broadcast=False)
     return "OK"
 
 @app.route('/toggleclockmode', methods = ['POST', 'GET'])
@@ -209,7 +211,7 @@ def toggleclockmode():
         log.debug("clockmode ERR")
 
     # emit pause state to other clients
-    socketio.emit('data', getData(), namespace='/status', broadcast=True)
+    socketio.emit('data', getData(), namespace='/status', broadcast=False)
     return "OK"
 
 @app.route('/playsound', methods = ['POST', 'GET'])
@@ -229,15 +231,15 @@ def adjustClock():
         log.debug("adjustClock ERR")
     setClock()
     # emit clock to other clients
-    socketio.emit('clock', getData(), namespace='/status', broadcast=True)
+    socketio.emit('clock', getData(), namespace='/status', broadcast=False)
     return "OK"
 
 @socketio.on('connect', namespace='/status')
 def connect():
     log.debug("flask client connected")
     # always emit at connect so client can update
-    socketio.emit('data', getData(), namespace='/status', broadcast=True)
-    #socketio.emit('clock', getData(), namespace='/status', broadcast=True)
+    socketio.emit('data', getData(), namespace='/status', broadcast=False)
+    #socketio.emit('clock', getData(), namespace='/status', broadcast=False)
     return "OK"
 
 @socketio.on('disconnect', namespace='/status')
@@ -251,8 +253,11 @@ def setClock():
     seconds = str(int(clock % 60)).zfill(2)
     clockstr = minutes + seconds
     # replace leading zero with space (easier to read)
-    clockstr = replace_leading_zero(clockstr)
-    #log.debug(clockstr)
+    if clockstr != "0000":
+        clockstr = replace_leading_zero(clockstr)
+    else:
+        clockstr = "   0"
+
     if (clockmode != CLOCKMODE_DEFAULT):
         digit.set(4, clockstr)
     else:
@@ -280,7 +285,7 @@ def loop(socketio):
         if clock > 0:
             clock = clock - 1
 
-            socketio.emit('clock', getData(), namespace='/status', broadcast=True)
+            socketio.emit('clock', getData(), namespace='/status', broadcast=False)
             if clock == 0:
                 pygame.mixer.Sound("/home/pi/scoreboard/buzzer.wav").play()
             elif clock < 10:
